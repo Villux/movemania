@@ -1,6 +1,8 @@
 import { useEffect, useMemo, useState } from "react";
 import * as Location from "expo-location";
 import * as h3 from "h3-js";
+import { rewardAssets } from "../assets/assets";
+import { Reward } from "./types";
 
 export function useLocation() {
   const [location, setLocation] = useState<null | Coordinate>(null);
@@ -74,15 +76,32 @@ export function distanceBetweenCoords(coord1: Coordinate, coord2: Coordinate) {
   return R * c; // in meters
 }
 
-export type Reward = {
-  type: "coin" | "diamond" | null;
-  coordinate: Coordinate;
-};
+const coinProbability = 0.1;
+const diamondProbability = 0.03;
+const keyProbability = 0.01;
+const chestProbability = 0.005;
 
-export const useRewardGenerator = (hexagon: string) => {
+export const useRewardGenerator = (hexagon: string, rewards: Reward[]) => {
+  // TODO: Limit the number of rewards according to what the user has collected already
   const reward = useMemo(() => {
-    const type: Reward["type"] =
-      Math.random() < 0.1 ? "coin" : Math.random() < 0.03 ? "diamond" : null;
+    const getType = (() => {
+      const random = Math.random();
+      if (random < chestProbability) {
+        return "chest";
+      } else if (random < keyProbability) {
+        return "key";
+      } else if (random < diamondProbability) {
+        return "diamond";
+      } else if (random < coinProbability) {
+        return "coin";
+      } else {
+        return null;
+      }
+    }) as () => Reward["type"];
+
+    const type = getType();
+
+    const assets = rewardAssets.find((a) => a.type === type);
 
     const latLng = h3.cellToLatLng(hexagon);
     const coordinate = {
@@ -90,7 +109,7 @@ export const useRewardGenerator = (hexagon: string) => {
       longitude: latLng[1],
     };
 
-    return { type, coordinate };
+    return { type, coordinate, assets };
   }, [hexagon]);
 
   return reward;
