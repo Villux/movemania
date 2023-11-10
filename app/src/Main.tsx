@@ -1,9 +1,7 @@
 import * as h3 from "h3-js";
 import LottieView from "lottie-react-native";
-import Animated, { FadeIn } from "react-native-reanimated";
-import { useEffect, useRef, useState } from "react";
+import { Fragment, useEffect, useRef, useState } from "react";
 import { StyleSheet, Text, View } from "react-native";
-import { BlurView } from "expo-blur";
 import { Audio } from "expo-av";
 
 import MapView, {
@@ -14,7 +12,14 @@ import MapView, {
   UserLocationChangeEvent,
 } from "react-native-maps";
 
-import { Coordinate, distanceBetweenCoords, isCoordInPolygon } from "./utils";
+import {
+  Coordinate,
+  Reward,
+  distanceBetweenCoords,
+  isCoordInPolygon,
+  useRewardGenerator,
+} from "./utils";
+import Overlay from "./Overlay";
 
 export default function Main({
   initialLocation,
@@ -42,8 +47,6 @@ export default function Main({
   );
 
   const hexagons = h3.gridDisk(h3Index, 6);
-  const coinLatLng = h3.cellToLatLng(hexagons[2]);
-  const coinCoordinate = { latitude: coinLatLng[0], longitude: coinLatLng[1] };
 
   function handleUserLocationChange({ nativeEvent }: UserLocationChangeEvent) {
     const { coordinate } = nativeEvent;
@@ -74,7 +77,7 @@ export default function Main({
         style={styles.map}
         initialRegion={initialRegion}
         provider={PROVIDER_GOOGLE}
-        customMapStyle={require("../assets/map-theme.json")}
+        customMapStyle={require("../assets/maps/map-theme.json")}
         onUserLocationChange={handleUserLocationChange}
         onRegionChange={handleRegionChange}
         minZoomLevel={14}
@@ -94,22 +97,29 @@ export default function Main({
             longitude: lng,
           }));
 
+          const reward = useRewardGenerator(hexagon);
+
+          useEffect(() => {
+            if (reward.type && isCaptured) {
+              setCoinFound(true);
+            }
+          }, [isCaptured, reward]);
+
           return (
-            <Polygon
-              key={hexagon}
-              coordinates={coordinates}
-              fillColor={fillColor}
-              strokeColor={strokeColor}
-              strokeWidth={1}
-            />
+            <Fragment key={hexagon}>
+              <Polygon
+                coordinates={coordinates}
+                fillColor={fillColor}
+                strokeColor={strokeColor}
+                strokeWidth={1}
+              />
+              <RewardMarker
+                reward={reward}
+                onPress={() => setCoinFound(true)}
+              />
+            </Fragment>
           );
         })}
-        {markersVisible && (
-          <CoinMarker
-            coordinate={coinCoordinate}
-            onPress={() => setCoinFound(true)}
-          />
-        )}
       </MapView>
 
       {coinFound && <CoinFound hide={() => setCoinFound(false)} />}
@@ -123,7 +133,7 @@ function CoinFound({ hide }: { hide: () => void }) {
   useEffect(() => {
     async function handle() {
       const { sound } = await Audio.Sound.createAsync(
-        require("../assets/coin-sound.wav")
+        require("../assets/sounds/coin-sound.wav")
       );
       sound.playAsync().catch((e) => console.log(e));
       lottieRef.current?.play();
@@ -133,26 +143,8 @@ function CoinFound({ hide }: { hide: () => void }) {
   }, []);
 
   return (
-    <BlurView
-      tint="dark"
-      intensity={50}
-      style={{
-        ...StyleSheet.absoluteFillObject,
-        alignItems: "center",
-        justifyContent: "center",
-      }}
-    >
-      <Animated.View
-        entering={FadeIn}
-        style={{
-          backgroundColor: "rgba(0,0,0,0.4)",
-          borderRadius: 32,
-          padding: 24,
-          paddingBottom: 0,
-          borderWidth: StyleSheet.hairlineWidth,
-          borderColor: "rgba(150, 150, 150, 0.4)",
-        }}
-      >
+    <Overlay>
+      <Fragment>
         <Text
           style={{
             color: "#fff",
@@ -169,25 +161,25 @@ function CoinFound({ hide }: { hide: () => void }) {
           autoPlay={false}
           speed={1.5}
           style={{ width: 200, height: 200 }}
-          source={require("../assets/coin-animation.json")}
+          source={require("../assets/animations/coin-animation.json")}
           onAnimationFinish={() => hide()}
         />
-      </Animated.View>
-    </BlurView>
+      </Fragment>
+    </Overlay>
   );
 }
-
-function CoinMarker({
-  coordinate,
+function RewardMarker({
+  reward,
   onPress,
 }: {
-  coordinate: Coordinate;
+  reward: Reward;
   onPress?: () => void;
 }) {
+  if (!reward.type) return null;
   return (
     <Marker
-      coordinate={coordinate}
-      image={require("../assets/coin.png")}
+      coordinate={reward.coordinate}
+      image={require("../assets/images/coin.png")}
       anchor={{ x: 0.5, y: 0.5 }}
       onPress={onPress}
     />

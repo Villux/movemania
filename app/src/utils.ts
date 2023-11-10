@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import * as Location from "expo-location";
 import * as h3 from "h3-js";
 
@@ -73,3 +73,25 @@ export function distanceBetweenCoords(coord1: Coordinate, coord2: Coordinate) {
 
   return R * c; // in meters
 }
+
+export type Reward = {
+  type: "coin" | "diamond" | null;
+  coordinate: Coordinate;
+};
+
+export const useRewardGenerator = (hexagon: string) => {
+  const reward = useMemo(() => {
+    const type: Reward["type"] =
+      Math.random() < 0.1 ? "coin" : Math.random() < 0.03 ? "diamond" : null;
+
+    const latLng = h3.cellToLatLng(hexagon);
+    const coordinate = {
+      latitude: latLng[0],
+      longitude: latLng[1],
+    };
+
+    return { type, coordinate };
+  }, [hexagon]);
+
+  return reward;
+};
