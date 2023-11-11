@@ -5,8 +5,8 @@ import { StyleSheet, View } from "react-native";
 import { Audio } from "expo-av";
 import { Marker, Region, UserLocationChangeEvent } from "react-native-maps";
 
-import { distanceBetweenCoords } from "./utils";
-import { Game, Reward, Coordinate } from "./types";
+import { distanceBetweenCoords, isCoordInPolygon } from "./utils";
+import { Game, Reward, Coordinate, Hexagon } from "./types";
 import { Button, Overlay, MapView, Text } from "./components";
 import { Hexagons } from "./Hexagons";
 import { createGameState } from "./game";
@@ -20,13 +20,10 @@ export function Main({
   initialLocation: Coordinate;
   persistedGameState: null | Game;
 }) {
-  const [locations, setLocations] = useState<Coordinate[]>([initialLocation]);
   const [game, setGame] = useState<Game | null>(persistedGameState);
   const [markersVisible, setMarkersVisible] = useState(true);
   const [rewardFound, setRewardFound] = useState(false);
-  /* Store all the rewards in a state variable. */
-  const [rewards, setRewards] = useState<Reward[]>([]);
-  const currentLocation = locations[locations.length - 1];
+  const lastLocation = useRef<Coordinate>(initialLocation);
 
   const initialRegion = {
     latitude: initialLocation.latitude,
@@ -36,7 +33,7 @@ export function Main({
   };
 
   function startGame() {
-    const _game = createGameState({ currentLocation });
+    const _game = createGameState({ initialLocation });
     setGame(_game);
     AsyncStorage.setItem("game", JSON.stringify(_game));
   }
@@ -47,14 +44,24 @@ export function Main({
   }
 
   function handleUserLocationChange({ nativeEvent }: UserLocationChangeEvent) {
-    const { coordinate } = nativeEvent;
-    if (!coordinate) return;
+    const currentLocation = nativeEvent.coordinate;
+    if (!currentLocation || !game) return;
 
-    const distance = distanceBetweenCoords(currentLocation, coordinate);
+    const distance = distanceBetweenCoords(
+      currentLocation,
+      lastLocation.current
+    );
 
     if (distance > 10) {
-      setLocations((p) => [...p, coordinate]);
+      const newHexagons = game.hexagons.map((hexagon) => {
+        if (hexagon.isCaptured) return hexagon;
+        const isCaptured = isCoordInPolygon(currentLocation, hexagon.h3Index);
+        return { ...hexagon, isCaptured };
+      });
+      setGame({ ...game, hexagons: newHexagons });
     }
+
+    lastLocation.current = currentLocation;
   }
 
   function handleRegionChange(region: Region) {
@@ -85,7 +92,7 @@ export function Main({
                   key={`${coordinate.latitude}-${coordinate.longitude}`}
                   reward={reward as Reward}
                   coordinate={coordinate}
-                  // onPress={() => setRewardFound(true)}
+                  onPress={() => setRewardFound(true)}
                 />
               ))}
             <Hexagons hexagons={game.hexagons} />

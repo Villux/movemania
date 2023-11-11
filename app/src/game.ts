@@ -9,9 +9,9 @@ const MAX_KEYS = 1;
 const MAX_CHESTS = 1;
 
 export function createGameState({
-  currentLocation,
+  initialLocation,
 }: {
-  currentLocation: Coordinate;
+  initialLocation: Coordinate;
 }): Game {
   const rewardAssigments: Record<Reward, number> = {
     coin: 0,
@@ -21,7 +21,7 @@ export function createGameState({
   };
 
   const gameLocation = moveCoordinateByKm({
-    coordinate: currentLocation,
+    coordinate: initialLocation,
     km: 0,
   });
 

@@ -33,5 +33,3 @@ export function Hexagons({ hexagons }: Props) {
     </>
   );
 }
-
-//  const isCaptured = locations.some((l) => isCoordInPolygon(l, hexagon));
