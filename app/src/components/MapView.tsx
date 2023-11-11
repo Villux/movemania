@@ -9,7 +9,6 @@ export function MapView(props: MapViewProps) {
       customMapStyle={require("../../assets/maps/map-theme.json")}
       minZoomLevel={14}
       maxZoomLevel={17}
-      followsUserLocation
       showsUserLocation
     />
   );

@@ -6,7 +6,7 @@ import { Audio } from "expo-av";
 import { Marker, Region, UserLocationChangeEvent } from "react-native-maps";
 
 import { distanceBetweenCoords, isCoordInPolygon } from "./utils";
-import { Game, Reward, Coordinate, Hexagon } from "./types";
+import { Game, Reward, Coordinate } from "./types";
 import { Button, Overlay, MapView, Text } from "./components";
 import { Hexagons } from "./Hexagons";
 import { createGameState } from "./game";
@@ -22,7 +22,7 @@ export function Main({
 }) {
   const [game, setGame] = useState<Game | null>(persistedGameState);
   const [markersVisible, setMarkersVisible] = useState(true);
-  const [rewardFound, setRewardFound] = useState(false);
+  const [foundReward, setFoundReward] = useState<Reward | null>(null);
   const lastLocation = useRef<Coordinate>(initialLocation);
 
   const initialRegion = {
@@ -56,6 +56,9 @@ export function Main({
       const newHexagons = game.hexagons.map((hexagon) => {
         if (hexagon.isCaptured) return hexagon;
         const isCaptured = isCoordInPolygon(currentLocation, hexagon.h3Index);
+        if (isCaptured && hexagon.reward) {
+          setFoundReward(hexagon.reward);
+        }
         return { ...hexagon, isCaptured };
       });
       setGame({ ...game, hexagons: newHexagons });
@@ -92,13 +95,19 @@ export function Main({
                   key={`${coordinate.latitude}-${coordinate.longitude}`}
                   reward={reward as Reward}
                   coordinate={coordinate}
-                  onPress={() => setRewardFound(true)}
                 />
               ))}
             <Hexagons hexagons={game.hexagons} />
           </>
         )}
       </MapView>
+
+      {!!foundReward && (
+        <FoundRewardOverlay
+          reward={foundReward}
+          hide={() => setFoundReward(null)}
+        />
+      )}
 
       {!game ? (
         <Overlay>
@@ -113,51 +122,43 @@ export function Main({
   );
 }
 
-/*
- <RewardMarker
-    reward={reward}
-    onPress={() => setRewardFound(true)}
-  />
-  {rewardFound && (
-    <RewardFound
-      reward={reward}
-      hide={() => setRewardFound(false)}
-    />
-  )}
-*/
+function FoundRewardOverlay({
+  reward,
+  hide,
+}: {
+  reward: Reward;
+  hide: () => void;
+}) {
+  const lottieRef = useRef<LottieView>(null);
+  const assets = rewardAssets[reward];
 
-// function RewardFound({ reward, hide }: { reward: Reward; hide: () => void }) {
-//   const lottieRef = useRef<LottieView>(null);
-//   if (!reward.type) return null;
-//   useEffect(() => {
-//     async function handle() {
-//       const { sound } = await Audio.Sound.createAsync(reward.assets.sound);
-//       sound.playAsync().catch((e) => console.log(e));
-//       lottieRef.current?.play();
-//     }
+  useEffect(() => {
+    async function handle() {
+      const { sound } = await Audio.Sound.createAsync(assets.sound);
+      sound.playAsync().catch((e) => console.log(e));
+      lottieRef.current?.play();
+    }
 
-//     setTimeout(handle, 500);
-//   }, []);
+    setTimeout(handle, 500);
+  }, []);
 
-//   return (
-//     <Overlay>
-//       <Fragment>
-//         <Text style={{ textAlign: "center" }}>
-//           You've found a {reward.type}!
-//         </Text>
-//         <LottieView
-//           ref={lottieRef}
-//           loop={false}
-//           autoPlay={false}
-//           speed={1.5}
-//           style={{ width: 200, height: 200 }}
-//           source={reward.assets.animation}
-//           onAnimationFinish={() => hide()}
-//         />
-//       </Fragment>
-//     </Overlay>
-//   );
-// }
+  return (
+    <Overlay>
+      <Fragment>
+        <Text style={{ textAlign: "center" }}>You've found a {reward}!</Text>
+        <LottieView
+          ref={lottieRef}
+          loop={false}
+          autoPlay={false}
+          speed={1.5}
+          style={{ width: 200, height: 200 }}
+          source={assets.animation}
+          onAnimationFinish={() => hide()}
+        />
+      </Fragment>
+    </Overlay>
+  );
+}
 
 function RewardMarker({
   reward,

@@ -76,6 +76,8 @@ const diamondProbability = 0.1;
 const keyProbability = 0.05;
 const chestProbability = 0.05;
 
+// TODO: do not assign a reward if sibling hexagon already has a reward
+
 export const assignReward = (
   hexagon: Hexagon,
   rewardAssigments: Record<Reward, number>
