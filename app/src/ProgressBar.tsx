@@ -4,6 +4,8 @@ import Animated, {
   useSharedValue,
   useAnimatedStyle,
   withTiming,
+  withRepeat,
+  withSequence,
 } from "react-native-reanimated";
 import { styled } from "./styled";
 import { Reward, RewardState } from "./types";
@@ -12,7 +14,7 @@ import { Text } from "./components";
 
 export function ProgressBar({
   collectedTiles,
-  boost = false,
+  boost = true,
   stats,
   onComplete,
 }: {
@@ -49,25 +51,12 @@ export function ProgressBar({
   const exp = getExp(stats);
 
   const progress = useSharedValue(0);
+  const height = useSharedValue(8);
 
   useEffect(() => {
     progress.value = withTiming(exp, { duration: 100 });
   }, [exp, stats]);
 
-  const progressStyle = useAnimatedStyle(() => {
-    return {
-      width: `${progress.value}%`,
-    };
-  });
-
-  // let boost = true;
-
-  // useEffect(() => {
-  //   setTimeout(() => {
-  //     boost = true;
-  //   }, 10000);
-  // }, [progress.value]);
-  //   When the bar is full, call the onComplete callback
   useEffect(() => {
     if (progress.value === 100) {
       setTimeout(() => {
@@ -75,6 +64,29 @@ export function ProgressBar({
       }, 1000);
     }
   }, [progress.value]);
+
+  const scale = useSharedValue(1);
+
+  useEffect(() => {
+    if (boost) {
+      height.value = withRepeat(
+        withSequence(
+          withTiming(9.5, { duration: 500 }),
+          withTiming(8, { duration: 500 })
+        ),
+        -1
+      );
+    } else {
+      scale.value = 1;
+    }
+  }, [boost]);
+
+  const progressStyle = useAnimatedStyle(() => {
+    return {
+      height: height.value,
+      width: `${progress.value}%`,
+    };
+  });
 
   return (
     <Stack axis="y" spacing="none">
@@ -117,7 +129,6 @@ const Container = styled(View, {
 });
 
 const Progress = styled(Animated.View, {
-  height: 8,
   borderRadius: 999,
   backgroundColor: "#00FF29",
   shadowOffset: { width: 0, height: 12 },
