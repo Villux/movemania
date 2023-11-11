@@ -3,7 +3,11 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 import { Fragment, useEffect, useRef, useState } from "react";
 import { StyleSheet, View } from "react-native";
 import { Audio } from "expo-av";
-import { Marker, Region, UserLocationChangeEvent } from "react-native-maps";
+import RNMapView, {
+  Marker,
+  Region,
+  UserLocationChangeEvent,
+} from "react-native-maps";
 
 import { distanceBetweenCoords, isCoordInPolygon } from "./utils";
 import { Game, Reward, Coordinate } from "./types";
@@ -24,6 +28,8 @@ export function Main({
   const [markersVisible, setMarkersVisible] = useState(true);
   const [foundReward, setFoundReward] = useState<Reward | null>(null);
   const lastLocation = useRef<Coordinate>(initialLocation);
+  const mapRef = useRef<RNMapView>(null);
+  const [followUserLocation, setFollowUserLocation] = useState(false);
 
   const initialRegion = {
     latitude: initialLocation.latitude,
@@ -46,6 +52,14 @@ export function Main({
   function handleUserLocationChange({ nativeEvent }: UserLocationChangeEvent) {
     const currentLocation = nativeEvent.coordinate;
     if (!currentLocation || !game) return;
+
+    if (followUserLocation) {
+      mapRef.current?.animateToRegion({
+        ...currentLocation,
+        latitudeDelta: 0.01,
+        longitudeDelta: 0.01,
+      });
+    }
 
     const distance = distanceBetweenCoords(
       currentLocation,
@@ -82,12 +96,17 @@ export function Main({
   return (
     <View style={styles.container}>
       <MapView
+        mapRef={mapRef}
         initialRegion={initialRegion}
         onUserLocationChange={handleUserLocationChange}
         onRegionChange={handleRegionChange}
       >
         {!!game && (
           <>
+            <FollowUserButton onPress={() => setFollowUserLocation((v) => !v)}>
+              {/* Follow or Stop following */}
+              <Text>{followUserLocation ? "F" : "S"}</Text>
+            </FollowUserButton>
             {game.hexagons
               .filter((h) => h.reward)
               .map(({ reward, coordinate }) => (
@@ -188,9 +207,21 @@ const styles = StyleSheet.create({
   },
 });
 
-const ResetGameButton = styled("TouchableOpacity", {
+const FollowUserButton = styled("TouchableOpacity", {
   position: "absolute",
   top: 40,
+  left: 20,
+  backgroundColor: "#000",
+  width: 40,
+  height: 40,
+  borderRadius: 20,
+  alignItems: "center",
+  justifyContent: "center",
+});
+
+const ResetGameButton = styled("TouchableOpacity", {
+  position: "absolute",
+  top: 90,
   left: 20,
   backgroundColor: "#000",
   width: 40,

@@ -1,9 +1,13 @@
 import RNMapView, { MapViewProps, PROVIDER_GOOGLE } from "react-native-maps";
 
-export function MapView(props: MapViewProps) {
+type Props = MapViewProps & {
+  mapRef?: React.RefObject<RNMapView>;
+};
+export function MapView(props: Props) {
   return (
     <RNMapView
       {...props}
+      ref={props.mapRef}
       style={{ flex: 1 }}
       provider={PROVIDER_GOOGLE}
       customMapStyle={require("../../assets/maps/map-theme.json")}
