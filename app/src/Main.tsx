@@ -120,7 +120,11 @@ export function Main({ initialLocation }: { initialLocation: Coordinate }) {
           <UserAvatar source={require("../assets/images/user-avatar.jpg")} />
 
           <Footer axis="y" spacing="xxsmall">
-            <ProgressBar onComplete={() => game.updatePhase("stats")} />
+            <ProgressBar
+              hexagons={game.state.hexagons}
+              stats={game.getStats(MAIN_PLAYER)}
+              onComplete={() => game.updatePhase("stats")}
+            />
             <StatsBar stats={game.getStats(MAIN_PLAYER)} />
           </Footer>
 

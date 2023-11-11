@@ -1,22 +1,58 @@
 import React, { useEffect } from "react";
-import { View } from "react-native";
+import { Image, View } from "react-native";
 import Animated, {
   useSharedValue,
   useAnimatedStyle,
   withTiming,
 } from "react-native-reanimated";
 import { styled } from "./styled";
+import { GameStats, Hexagon } from "./types";
+import { Text } from "./components";
+import { Stack } from "./components/Stack";
 
 export default function ProgressBar({
+  hexagons,
+  stats,
   onComplete,
 }: {
+  hexagons: Hexagon[];
+  stats: GameStats;
   onComplete: () => void;
 }) {
+  // Progress is calculated as so:
+  // The total exp needed to level up is 1000
+  // A new tile is worth 50 exp
+  // A coin is worth 50 exp
+  // A diamond is worth 100 exp
+  // A key is worth 150 exp
+  // A chest is worth 200 exp
+
+  //   const progress = useMemo(() => {
+  //     let prog = 0;
+  //     for (const hexagon of hexagons) {
+  //       prog += hexagon.capturedBy.includes(MAIN_PLAYER) ? 50 : 0;
+  //     }
+
+  //     type Reward = "coin" | "diamond" | "key" | "chest";
+
+  //     type GameStats = Record<Reward, { collected: number; max: number }>;
+
+  //     // Get the prog from the stats
+  //     const { coin, diamond, key, chest } = stats;
+
+  //     prog += coin.collected * 5;
+  //     prog += diamond.collected * 10;
+  //     prog += key.collected * 15;
+  //     prog += chest.collected * 20;
+
+  //     return prog;
+  //   }, [hexagons, stats]);
+  //   console.log("getProgress", progress);
   const progress = useSharedValue(0);
 
   useEffect(() => {
-    progress.value = withTiming(100, { duration: 100000 });
-  }, []);
+    progress.value = withTiming(100, { duration: 50000 });
+  }, [stats, hexagons]);
 
   const progressStyle = useAnimatedStyle(() => {
     return {
@@ -24,6 +60,13 @@ export default function ProgressBar({
     };
   });
 
+  let boost = true;
+
+  useEffect(() => {
+    setTimeout(() => {
+      boost = true;
+    }, 10000);
+  }, [progress.value]);
   //   When the bar is full, call the onComplete callback
   useEffect(() => {
     if (progress.value === 100) {
@@ -32,13 +75,34 @@ export default function ProgressBar({
   }, [progress.value]);
 
   return (
-    <Container>
-      <Progress style={progressStyle} />
-    </Container>
+    <Stack axis="y" spacing="none">
+      {boost && (
+        <Boost>
+          <Text
+            variant="button"
+            color="buttonText"
+            style={{
+              fontSize: 18,
+            }}
+          >
+            Boost
+          </Text>
+        </Boost>
+      )}
+      <Stack axis="x" spacing="none">
+        <Image source={require("../assets/images/boost.png")} />
+        <Container>
+          <Progress
+            style={[progressStyle, boost && { shadowColor: "#00FF29" }]}
+          />
+        </Container>
+      </Stack>
+    </Stack>
   );
 }
 
 const Container = styled(View, {
+  width: "90%",
   height: 8,
   margin: 10,
   borderRadius: 999,
@@ -49,7 +113,6 @@ const Progress = styled(Animated.View, {
   height: 8,
   borderRadius: 999,
   backgroundColor: "#00FF29",
-  shadowColor: "#00FF29",
   shadowOffset: {
     width: 0,
     height: 12,
@@ -58,4 +121,14 @@ const Progress = styled(Animated.View, {
   shadowRadius: 16.0,
 
   elevation: 24,
+});
+
+const Boost = styled(View, {
+  borderRadius: 4,
+  position: "absolute",
+  backgroundColor: "#00FF29",
+  right: 10,
+  bottom: 25,
+  paddingHorizontal: 3,
+  paddingVertical: 1,
 });
