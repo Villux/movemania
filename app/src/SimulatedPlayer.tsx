@@ -23,6 +23,8 @@ export function SimulatedPlayer({ game, player }: Props) {
 
   const currentCoordinate = useSimulatePlayer({ game, player, enabled });
 
+  if (!enabled) return null;
+
   return (
     <Marker
       coordinate={currentCoordinate}

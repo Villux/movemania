@@ -19,10 +19,10 @@ export function LevelStartNextOverlay({
             <Text variant="title" color="primary">
               Level 2
             </Text>
-            <Text>Robot apes have raided an area near you!</Text>
-            <Text>
-              You need to help the locals find all the barrels and bananas that
-              the apes have thrown in the streets.
+            <Text style={{ lineHeight: 24 }}>
+              Your objective in this level is to team up with a fellow
+              adventurer and explore the expansive area on foot, uncovering
+              hidden secrets and overcoming obstacles together.
             </Text>
           </Stack>
           <Button onPress={resetGame}>Start level</Button>

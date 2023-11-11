@@ -15,11 +15,11 @@ export function LevelStartOverlay({ startGame }: { startGame: () => void }) {
           <Text variant="title" color="primary">
             Level 1
           </Text>
-          <Text>
-            Cyberpirates have seized an area nearby and hidden their treasure
-            all around the area.
+          <Text style={{ lineHeight: 24 }}>
+            Navigate through the mysterious land, collecting coins and gems
+            along the way, locate the hidden treasure chest, and find the
+            elusive key to unlock its secrets.
           </Text>
-          <Text>Your job is to find and steal back that treasure.</Text>
           <Button onPress={startGame}>Start level</Button>
         </Stack>
       </Stack>
