@@ -1,13 +1,13 @@
 import React from "react";
 import { Image } from "react-native";
 
-import { GameStats, Reward } from "./types";
+import { Reward, RewardState } from "./types";
 import { styled } from "./styled";
 import { rewardAssets } from "../assets/assets";
 import { Text } from "./components";
 import { BlurView } from "expo-blur";
 
-export function StatsBar({ stats }: { stats: GameStats }) {
+export function StatsBar({ stats }: { stats: Record<Reward, RewardState> }) {
   return (
     <BlurView tint="dark" intensity={40}>
       <StatsBarContainer>
@@ -16,9 +16,9 @@ export function StatsBar({ stats }: { stats: GameStats }) {
             <StatIcon source={rewardAssets[key as Reward].image} />
             <StatText
               variant="button"
-              color={value.collected === 0 ? "textMuted" : "primary"}
+              color={value.foundCount === 0 ? "textMuted" : "primary"}
             >
-              {value.collected}
+              {value.foundCount}
             </StatText>
           </Square>
         ))}

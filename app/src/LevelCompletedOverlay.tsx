@@ -1,5 +1,5 @@
 import { styled } from "./styled";
-import { GameStats, Reward } from "./types";
+import { Reward, RewardState } from "./types";
 import { Button, Grid, Overlay, Text } from "./components";
 import { Stack } from "./components/Stack";
 import { rewardAssets } from "../assets/assets";
@@ -8,7 +8,7 @@ export function LevelCompletedOverlay({
   stats,
   onContinue,
 }: {
-  stats: GameStats;
+  stats: Record<Reward, RewardState>;
   onContinue: () => void;
 }) {
   return (
@@ -36,9 +36,9 @@ export function LevelCompletedOverlay({
 
                   <StatText
                     variant="button"
-                    color={value.collected === 0 ? "textMuted" : "primary"}
+                    color={value.foundCount === 0 ? "textMuted" : "primary"}
                   >
-                    {value.collected}/{value.max} {key}s
+                    {value.foundCount}/{value.maxCount} {key}s
                   </StatText>
                 </LevelStats>
               ))}

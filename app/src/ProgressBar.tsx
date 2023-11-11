@@ -6,53 +6,50 @@ import Animated, {
   withTiming,
 } from "react-native-reanimated";
 import { styled } from "./styled";
-import { GameStats, Hexagon } from "./types";
-import { Text } from "./components";
+import { Hexagon, Reward, RewardState } from "./types";
 import { Stack } from "./components/Stack";
 
 export function ProgressBar({
-  hexagons,
+  collectedTiles,
   stats,
   onComplete,
 }: {
-  hexagons: Hexagon[];
-  stats: GameStats;
+  collectedTiles: number;
+  stats: Record<Reward, RewardState>;
   onComplete: () => void;
 }) {
-  // Progress is calculated as so:
-  // The total exp needed to level up is 1000
-  // A new tile is worth 50 exp
-  // A coin is worth 50 exp
-  // A gem is worth 100 exp
-  // A key is worth 150 exp
-  // A chest is worth 200 exp
+  const getExpByReward = (reward: Reward) => {
+    switch (reward) {
+      case "coin":
+        return 5;
+      case "gem":
+        return 10;
+      case "key":
+        return 20;
+      case "chest":
+        return 30;
+      default:
+        return 0;
+    }
+  };
 
-  //   const progress = useMemo(() => {
-  //     let prog = 0;
-  //     for (const hexagon of hexagons) {
-  //       prog += hexagon.capturedBy.includes(MAIN_PLAYER) ? 50 : 0;
-  //     }
+  const getExp = (stats: Record<Reward, RewardState>) => {
+    if (collectedTiles === 0) return 0;
+    let exp = 0;
+    Object.entries(stats).forEach(([key, value]) => {
+      exp += value.foundCount * getExpByReward(key as Reward);
+    });
+    exp += collectedTiles * 2;
+    return Math.min(exp, 100);
+  };
 
-  //     type Reward = "coin" | "gem" | "key" | "chest";
+  const exp = getExp(stats);
 
-  //     type GameStats = Record<Reward, { collected: number; max: number }>;
-
-  //     // Get the prog from the stats
-  //     const { coin, gem, key, chest } = stats;
-
-  //     prog += coin.collected * 5;
-  //     prog += gem.collected * 10;
-  //     prog += key.collected * 15;
-  //     prog += chest.collected * 20;
-
-  //     return prog;
-  //   }, [hexagons, stats]);
-  //   console.log("getProgress", progress);
   const progress = useSharedValue(0);
 
   useEffect(() => {
-    progress.value = withTiming(100, { duration: 50000 });
-  }, [stats, hexagons]);
+    progress.value = withTiming(exp, { duration: 100 });
+  }, [exp, stats]);
 
   const progressStyle = useAnimatedStyle(() => {
     return {
@@ -67,12 +64,12 @@ export function ProgressBar({
   //     boost = true;
   //   }, 10000);
   // }, [progress.value]);
-  // //   When the bar is full, call the onComplete callback
-  // useEffect(() => {
-  //   if (progress.value === 100) {
-  //     onComplete();
-  //   }
-  // }, [progress.value]);
+  //   When the bar is full, call the onComplete callback
+  useEffect(() => {
+    if (progress.value === 100) {
+      onComplete();
+    }
+  }, [progress.value]);
 
   return (
     <Stack axis="y" spacing="none">

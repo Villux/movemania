@@ -108,11 +108,6 @@ export function Main({ initialLocation }: { initialLocation: Coordinate }) {
           />
         </FloatingButton>
 
-        <Image
-          autoSize={{ height: 24 }}
-          source={require("../assets/images/logo.png")}
-        />
-
         <UserAvatar source={require("../assets/images/user-avatar.jpg")} />
       </Header>
 
@@ -131,11 +126,11 @@ export function Main({ initialLocation }: { initialLocation: Coordinate }) {
 
           <Footer axis="y" spacing="xxsmall">
             <ProgressBar
-              hexagons={game.state.hexagons}
-              stats={game.getStats(MAIN_PLAYER)}
+              collectedTiles={game.state.gameState.collectedTiles}
+              stats={game.state.rewardState}
               onComplete={() => game.updatePhase("stats")}
             />
-            <StatsBar stats={game.getStats(MAIN_PLAYER)} />
+            <StatsBar stats={game.state.rewardState} />
           </Footer>
 
           {debug && (
@@ -154,7 +149,7 @@ export function Main({ initialLocation }: { initialLocation: Coordinate }) {
 
       {game.state.phase === "stats" && (
         <LevelCompletedOverlay
-          stats={game.getStats(MAIN_PLAYER)}
+          stats={game.state.rewardState}
           onContinue={() => game.updatePhase("highlights")}
         />
       )}
