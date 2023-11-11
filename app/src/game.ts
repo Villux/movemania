@@ -1,5 +1,4 @@
 import * as h3 from "h3-js";
-import { useMemo } from "react";
 
 import { isCoordInPolygon, moveCoordinateByKm, useStorageState } from "./utils";
 
@@ -17,28 +16,33 @@ const MAX_DIAMONDS = 3;
 const MAX_KEYS = 1;
 const MAX_CHESTS = 1;
 
-const playerName = "Teemu";
-
 export function useGame(initialLocation: Coordinate) {
   const [_state, setState] = useStorageState<Game>("game");
   const state = _state || createGame(initialLocation);
 
-  function updateHexagons(currentLocation: Coordinate) {
+  function updateHexagons({
+    player,
+    currentLocation,
+  }: {
+    currentLocation: Coordinate;
+    player: string;
+  }) {
     let foundReward: Reward | null = null;
 
     const updatedHexagons = state.hexagons.map((hexagon) => {
-      if (hexagon.capturedBy) return hexagon;
-
       const isCaptured = isCoordInPolygon(currentLocation, hexagon.h3Index);
+      if (!isCaptured) return hexagon;
 
-      if (isCaptured && hexagon.reward) {
+      if (!hexagon.capturedBy.includes(player)) {
+        hexagon.capturedBy = [...hexagon.capturedBy, player];
+      }
+
+      // Show the found reward to user
+      if (hexagon.reward) {
         foundReward = hexagon.reward;
       }
 
-      return {
-        ...hexagon,
-        capturedBy: isCaptured ? playerName : null,
-      };
+      return hexagon;
     });
 
     setState({ ...state, hexagons: updatedHexagons });
@@ -54,7 +58,7 @@ export function useGame(initialLocation: Coordinate) {
     setState(createGame(initialLocation));
   }
 
-  const stats = useMemo(() => {
+  function getStats(player: string) {
     const stats: GameStats = {
       coin: 0,
       diamond: 0,
@@ -63,15 +67,15 @@ export function useGame(initialLocation: Coordinate) {
     };
 
     state.hexagons.forEach((hexagon) => {
-      if (hexagon.capturedBy === playerName && hexagon.reward) {
+      if (hexagon.capturedBy?.includes(player) && hexagon.reward) {
         stats[hexagon.reward] += 1;
       }
     });
 
     return stats;
-  }, [state.hexagons]);
+  }
 
-  return { state, stats, updateHexagons, updatePhase, resetGame };
+  return { state, getStats, updateHexagons, updatePhase, resetGame };
 }
 
 function createGame(initialLocation: Coordinate): Game {
@@ -130,7 +134,7 @@ function createHexagons(gameLocation: Coordinate) {
 
     return {
       h3Index,
-      capturedBy: null,
+      capturedBy: [],
       reward: null,
       coordinate: {
         latitude: coord[0],

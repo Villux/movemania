@@ -10,9 +10,16 @@ export function Hexagons({ hexagons }: Props) {
   return (
     <>
       {hexagons.map(({ h3Index, capturedBy }) => {
-        const isCaptured = capturedBy !== null;
-        const fillColor = `rgba(255, 245, 0, ${isCaptured ? 0.5 : 0.05})`;
-        const strokeColor = isCaptured ? "#fff385" : "#000";
+        const capturedCount = capturedBy?.length ?? 0;
+
+        // Increase opacity of hexagon fill color based on number of players
+        // that have captured it.
+        const fillColor = `rgba(255, 245, 0, ${Math.min(
+          1,
+          0.08 + capturedCount * 0.25
+        )})`;
+
+        const strokeColor = capturedCount > 0 ? "#fff385" : "#000";
 
         const coordinates = h3.cellToBoundary(h3Index).map(([lat, lng]) => ({
           latitude: lat,

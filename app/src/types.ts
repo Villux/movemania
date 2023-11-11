@@ -7,7 +7,7 @@ export type Reward = "coin" | "diamond" | "key" | "chest";
 
 export type Hexagon = {
   h3Index: string;
-  capturedBy: string | null;
+  capturedBy: string[];
   reward: Reward | null;
   coordinate: Coordinate;
 };
@@ -24,4 +24,10 @@ export type GameStats = Record<Reward, number>;
 export type Game = {
   hexagons: Hexagon[];
   phase: GamePhase;
+};
+
+export type SimulatedPlayer = {
+  name: string;
+  color: string;
+  route: Coordinate[];
 };

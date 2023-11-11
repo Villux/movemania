@@ -12,6 +12,10 @@ import { StatsBar } from "./StatsBar";
 import { LevelCompleted, LevelStart } from "./LevelOverlays";
 import { RewardMarker } from "./RewardMarker";
 import { FoundRewardOverlay } from "./FoundRewardOverlay";
+import { useSimulatePlayers } from "./player-simulation";
+import { player1, player2 } from "./player-simulation-data";
+
+const mainPlayer = "Teemu";
 
 export function Main({ initialLocation }: { initialLocation: Coordinate }) {
   const game = useGame(initialLocation);
@@ -39,7 +43,10 @@ export function Main({ initialLocation }: { initialLocation: Coordinate }) {
 
     // Process the current location if the user has moved enough
     if (distance > 10) {
-      const rewardForHexagon = game.updateHexagons(currentLocation);
+      const rewardForHexagon = game.updateHexagons({
+        currentLocation,
+        player: mainPlayer,
+      });
       setFoundReward(rewardForHexagon);
     }
 
@@ -65,6 +72,9 @@ export function Main({ initialLocation }: { initialLocation: Coordinate }) {
       setMarkersVisible(true);
     }
   }
+
+  useSimulatePlayers({ game, player: player1 });
+  useSimulatePlayers({ game, player: player2 });
 
   return (
     <Container>
@@ -99,7 +109,7 @@ export function Main({ initialLocation }: { initialLocation: Coordinate }) {
             />
           )}
 
-          <StatsBar stats={game.stats} />
+          <StatsBar stats={game.getStats(mainPlayer)} />
 
           <FollowUserButton onPress={() => setFollowUserLocation((v) => !v)}>
             <Icon
@@ -136,7 +146,7 @@ function RewardMarkers({ hexagons }: { hexagons: Hexagon[] }) {
   return (
     <>
       {hexagons
-        .filter((h) => h.reward && h.capturedBy === null)
+        .filter((h) => h.reward && h.capturedBy.length > 0)
         .map(({ reward, coordinate }) => (
           <RewardMarker
             key={`${coordinate.latitude}-${coordinate.longitude}`}
