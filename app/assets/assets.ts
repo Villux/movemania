@@ -15,7 +15,7 @@ export const rewardAssets = {
     sound: require("./sounds/key.mp3"),
   },
   chest: {
-    image: require("./images/coin.png"),
+    image: require("./images/chest.png"),
     animation: require("./animations/chest.json"),
     sound: require("./sounds/chest.mp3"),
   },
