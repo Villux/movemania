@@ -54,7 +54,9 @@ export function Main({ initialLocation }: { initialLocation: Coordinate }) {
         player: MAIN_PLAYER,
       });
 
-      setFoundReward(rewardForHexagon);
+      if (!foundReward) {
+        setFoundReward(rewardForHexagon);
+      }
     }
 
     if (followUserLocation) {

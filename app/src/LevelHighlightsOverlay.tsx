@@ -11,14 +11,14 @@ export function LevelHighlightsOverlay({
 }) {
   return (
     <Overlay>
-      <Stack axis="y" spacing="normal" style={{ paddingTop: 20 }}>
+      <Stack axis="y" spacing="normal" style={{ padding: 20 }}>
         <Image
           autoSize={{ width: 100 }}
           source={require("../assets/images/highlights.png")}
           style={{ alignSelf: "center" }}
         />
-        <Stack axis="y" spacing="medium" style={{ padding: 20, paddingTop: 8 }}>
-          <Stack axis="y" spacing="small">
+        <Stack axis="y" spacing="medium">
+          <Stack axis="y" spacing="small" align="center">
             <Text variant="title" color="primary">
               Team highlights
             </Text>

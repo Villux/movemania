@@ -12,10 +12,10 @@ import {
   Reward,
 } from "./types";
 
-const MAX_COINS = 10;
+const MAX_COINS = 5;
 const MAX_DIAMONDS = 5;
-const MAX_KEYS = 1;
-const MAX_CHESTS = 1;
+const MAX_KEYS = 3;
+const MAX_CHESTS = 60;
 
 export function useGame(initialLocation: Coordinate) {
   const [_state, setState] = useStorageState<Game>("game", () =>

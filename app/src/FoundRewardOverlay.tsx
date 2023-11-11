@@ -1,11 +1,18 @@
 import LottieView from "lottie-react-native";
-import { Fragment, useEffect, useRef } from "react";
+import { useEffect, useRef } from "react";
 import { Audio } from "expo-av";
 
 import { Reward } from "./types";
 import { Overlay, Text } from "./components";
 import { rewardAssets } from "../assets/assets";
 import { Stack } from "./components/Stack";
+
+const animationSpeedup: Record<Reward, number> = {
+  coin: 2,
+  chest: 1,
+  gem: 1,
+  key: 2,
+};
 
 export function FoundRewardOverlay({
   reward,
@@ -18,7 +25,7 @@ export function FoundRewardOverlay({
   const assets = rewardAssets[reward];
 
   function handleAnimationFinish() {
-    setTimeout(hide, 1000);
+    setTimeout(() => hide(), 1000);
   }
 
   useEffect(() => {
@@ -40,7 +47,7 @@ export function FoundRewardOverlay({
           ref={lottieRef}
           loop={false}
           autoPlay={false}
-          speed={1.5}
+          speed={animationSpeedup[reward]}
           style={{ width: 200, height: 200 }}
           source={assets.animation}
           onAnimationFinish={handleAnimationFinish}
