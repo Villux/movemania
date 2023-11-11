@@ -60,23 +60,23 @@ export function ProgressBar({
     };
   });
 
-  let boost = true;
+  // let boost = true;
 
-  useEffect(() => {
-    setTimeout(() => {
-      boost = true;
-    }, 10000);
-  }, [progress.value]);
-  //   When the bar is full, call the onComplete callback
-  useEffect(() => {
-    if (progress.value === 100) {
-      onComplete();
-    }
-  }, [progress.value]);
+  // useEffect(() => {
+  //   setTimeout(() => {
+  //     boost = true;
+  //   }, 10000);
+  // }, [progress.value]);
+  // //   When the bar is full, call the onComplete callback
+  // useEffect(() => {
+  //   if (progress.value === 100) {
+  //     onComplete();
+  //   }
+  // }, [progress.value]);
 
   return (
     <Stack axis="y" spacing="none">
-      {boost && (
+      {/* {boost && (
         <Boost>
           <Text
             variant="button"
@@ -89,12 +89,18 @@ export function ProgressBar({
           </Text>
         </Boost>
       )}
-      <Stack axis="x" spacing="none">
+      
+      boost && { shadowColor: "#00FF29" }
+      */}
+      <Stack
+        axis="x"
+        spacing="xsmall"
+        align="center"
+        style={{ paddingHorizontal: 12 }}
+      >
         <Image source={require("../assets/images/boost.png")} />
         <Container>
-          <Progress
-            style={[progressStyle, boost && { shadowColor: "#00FF29" }]}
-          />
+          <Progress style={progressStyle} />
         </Container>
       </Stack>
     </Stack>
@@ -102,9 +108,8 @@ export function ProgressBar({
 }
 
 const Container = styled(View, {
-  width: "90%",
+  flex: 1,
   height: 8,
-  margin: 10,
   borderRadius: 999,
   backgroundColor: "#00000080",
 });
@@ -113,21 +118,17 @@ const Progress = styled(Animated.View, {
   height: 8,
   borderRadius: 999,
   backgroundColor: "#00FF29",
-  shadowOffset: {
-    width: 0,
-    height: 12,
-  },
-  shadowOpacity: 0.88,
-  shadowRadius: 16.0,
-  elevation: 24,
+  shadowOffset: { width: 0, height: 12 },
+  shadowOpacity: 0.8,
+  shadowRadius: 16,
 });
 
-const Boost = styled(View, {
-  borderRadius: 4,
-  position: "absolute",
-  backgroundColor: "#00FF29",
-  right: 10,
-  bottom: 25,
-  paddingHorizontal: 3,
-  paddingVertical: 1,
-});
+// const Boost = styled(View, {
+//   borderRadius: 4,
+//   position: "absolute",
+//   backgroundColor: "#00FF29",
+//   right: 10,
+//   bottom: 25,
+//   paddingHorizontal: 3,
+//   paddingVertical: 1,
+// });
