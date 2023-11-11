@@ -13,7 +13,7 @@ import { LevelCompleted, LevelStart } from "./LevelOverlays";
 import { RewardMarker } from "./RewardMarker";
 import { FoundRewardOverlay } from "./FoundRewardOverlay";
 import { useSimulatePlayer } from "./player-simulation";
-import { player1, player2 } from "./player-simulation-data";
+import { player1, player2, player3 } from "./player-simulation-data";
 import { SimulatedPlayer } from "./SimulatedPlayer";
 
 const mainPlayer = "Teemu";
@@ -91,7 +91,7 @@ export function Main({ initialLocation }: { initialLocation: Coordinate }) {
             <RewardMarkers hexagons={game.state.hexagons} />
             <Hexagons hexagons={game.state.hexagons} />
             <SimulatedPlayer game={game} player={player1} />
-            <SimulatedPlayer game={game} player={player2} />
+            <SimulatedPlayer game={game} player={player3} />
           </>
         )}
       </MapView>
