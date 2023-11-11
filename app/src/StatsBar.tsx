@@ -1,23 +1,15 @@
-import { Image } from "react-native";
 import React from "react";
-import { Game, Reward } from "./types";
+import { Image } from "react-native";
+
+import { GameStats, Reward } from "./types";
 import { styled } from "./styled";
 import { rewardAssets } from "../assets/assets";
 import { Text } from "./components";
 
-const mock: {
-  [key in Reward]: number;
-} = {
-  coin: 5,
-  diamond: 0,
-  key: 1,
-  chest: 0,
-};
-
-export function StatsBar({ game }: { game: Game }) {
+export function StatsBar({ stats }: { stats: GameStats }) {
   return (
     <StatsBarContainer>
-      {Object.entries(mock).map(([key, value]) => (
+      {Object.entries(stats).map(([key, value]) => (
         <Square key={key}>
           <StatIcon source={rewardAssets[key as Reward].image} />
           <StatText color={value === 0 ? "textMuted" : "primary"}>

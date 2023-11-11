@@ -9,6 +9,7 @@ import {
   Hexagon,
   Reward,
 } from "./types";
+import { useMemo } from "react";
 
 const MAX_COINS = 5;
 const MAX_DIAMONDS = 3;
@@ -18,13 +19,13 @@ const MAX_CHESTS = 1;
 const playerName = "Teemu";
 
 export function useGame(initialLocation: Coordinate) {
-  const [_game, setGame] = useStorageState<Game>("game");
-  const game = _game || createGame(initialLocation);
+  const [_state, setState] = useStorageState<Game>("game");
+  const state = _state || createGame(initialLocation);
 
   function updateHexagons(currentLocation: Coordinate) {
     let foundReward: Reward | null = null;
 
-    const updatedHexagons = game.hexagons.map((hexagon) => {
+    const updatedHexagons = state.hexagons.map((hexagon) => {
       if (hexagon.capturedBy) return hexagon;
 
       const isCaptured = isCoordInPolygon(currentLocation, hexagon.h3Index);
@@ -36,20 +37,20 @@ export function useGame(initialLocation: Coordinate) {
       return { ...hexagon, capturedBy: playerName };
     });
 
-    setGame({ ...game, hexagons: updatedHexagons });
+    setState({ ...state, hexagons: updatedHexagons });
 
     return foundReward;
   }
 
   function updatePhase(phase: GamePhase) {
-    setGame({ ...game, phase });
+    setState({ ...state, phase });
   }
 
   function resetGame() {
-    setGame(createGame(initialLocation));
+    setState(createGame(initialLocation));
   }
 
-  function getStats() {
+  const stats = useMemo(() => {
     const stats: GameStats = {
       coin: 0,
       diamond: 0,
@@ -57,16 +58,16 @@ export function useGame(initialLocation: Coordinate) {
       chest: 0,
     };
 
-    game.hexagons.forEach((hexagon) => {
+    state.hexagons.forEach((hexagon) => {
       if (hexagon.capturedBy === playerName && hexagon.reward) {
         stats[hexagon.reward] += 1;
       }
     });
 
     return stats;
-  }
+  }, [state.hexagons]);
 
-  return { game, updateHexagons, updatePhase, resetGame, getStats };
+  return { state, stats, updateHexagons, updatePhase, resetGame };
 }
 
 function createGame(initialLocation: Coordinate): Game {

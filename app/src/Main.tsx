@@ -14,8 +14,7 @@ import { RewardMarker } from "./RewardMarker";
 import { FoundRewardOverlay } from "./FoundRewardOverlay";
 
 export function Main({ initialLocation }: { initialLocation: Coordinate }) {
-  const { game, updatePhase, updateHexagons, resetGame } =
-    useGame(initialLocation);
+  const game = useGame(initialLocation);
   const [markersVisible, setMarkersVisible] = useState(true);
   const [foundReward, setFoundReward] = useState<Reward | null>(null);
   const [followUserLocation, setFollowUserLocation] = useState(false);
@@ -40,7 +39,7 @@ export function Main({ initialLocation }: { initialLocation: Coordinate }) {
 
     // Process the current location if the user has moved enough
     if (distance > 10) {
-      const rewardForHexagon = updateHexagons(currentLocation);
+      const rewardForHexagon = game.updateHexagons(currentLocation);
       setFoundReward(rewardForHexagon);
     }
 
@@ -79,19 +78,19 @@ export function Main({ initialLocation }: { initialLocation: Coordinate }) {
         onUserLocationChange={handleUserLocationChange}
         onRegionChange={handleRegionChange}
       >
-        {game.phase === "play" && (
+        {game.state.phase === "play" && (
           <>
-            <RewardMarkers hexagons={game.hexagons} />
-            <Hexagons hexagons={game.hexagons} />
+            <RewardMarkers hexagons={game.state.hexagons} />
+            <Hexagons hexagons={game.state.hexagons} />
           </>
         )}
       </MapView>
 
-      {game.phase === "start" && (
-        <LevelStart startGame={() => updatePhase("play")} />
+      {game.state.phase === "start" && (
+        <LevelStart startGame={() => game.updatePhase("play")} />
       )}
 
-      {game.phase === "play" && (
+      {game.state.phase === "play" && (
         <>
           {!!foundReward && (
             <FoundRewardOverlay
@@ -100,7 +99,7 @@ export function Main({ initialLocation }: { initialLocation: Coordinate }) {
             />
           )}
 
-          <StatsBar game={game} />
+          <StatsBar stats={game.stats} />
 
           <FollowUserButton onPress={() => setFollowUserLocation((v) => !v)}>
             <Icon
@@ -112,19 +111,19 @@ export function Main({ initialLocation }: { initialLocation: Coordinate }) {
         </>
       )}
 
-      {game.phase === "stats" && (
-        <LevelCompleted onContinue={() => updatePhase("highlights")} />
+      {game.state.phase === "stats" && (
+        <LevelCompleted onContinue={() => game.updatePhase("highlights")} />
       )}
 
-      {game.phase === "highlights" && <View>{/* TODO */}</View>}
+      {game.state.phase === "highlights" && <View>{/* TODO */}</View>}
 
-      {(game.phase === "play" || game.phase === "highlights") && (
+      {(game.state.phase === "play" || game.state.phase === "highlights") && (
         <>
-          <ResetGameButton onPress={resetGame}>
+          <ResetGameButton onPress={game.resetGame}>
             <Icon name="reset" size={24} color="primary" />
           </ResetGameButton>
 
-          <FinishGameButton onPress={() => updatePhase("stats")}>
+          <FinishGameButton onPress={() => game.updatePhase("stats")}>
             <Icon name="reset" size={24} color="primaryDark" />
           </FinishGameButton>
         </>
