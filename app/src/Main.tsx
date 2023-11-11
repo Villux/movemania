@@ -17,13 +17,9 @@ import {
 } from "./LevelOverlays";
 import { RewardMarker } from "./RewardMarker";
 import { FoundRewardOverlay } from "./FoundRewardOverlay";
-import { useSimulatePlayer } from "./player-simulation";
-import { player1, player2, player3 } from "./player-simulation-data";
+import { player1, player3 } from "./player-simulation-data";
 import { SimulatedPlayer } from "./SimulatedPlayer";
-
-const mainPlayer = "Teemu";
-
-const debug = true;
+import { MAIN_PLAYER } from "./constants";
 
 export function Main({ initialLocation }: { initialLocation: Coordinate }) {
   const game = useGame(initialLocation);
@@ -53,8 +49,9 @@ export function Main({ initialLocation }: { initialLocation: Coordinate }) {
     if (distance > 10) {
       const rewardForHexagon = game.updateHexagons({
         currentLocation,
-        player: mainPlayer,
+        player: MAIN_PLAYER,
       });
+
       setFoundReward(rewardForHexagon);
     }
 
@@ -91,7 +88,7 @@ export function Main({ initialLocation }: { initialLocation: Coordinate }) {
       >
         {game.state.phase === "play" && (
           <>
-            {debug && <RewardMarkers hexagons={game.state.hexagons} />}
+            <RewardMarkers hexagons={game.state.hexagons} />
             <Hexagons hexagons={game.state.hexagons} />
             <SimulatedPlayer game={game} player={player1} />
             <SimulatedPlayer game={game} player={player3} />
@@ -118,7 +115,7 @@ export function Main({ initialLocation }: { initialLocation: Coordinate }) {
 
           <UserAvatar source={require("../assets/images/user-avatar.jpg")} />
 
-          <StatsBar stats={game.getStats(mainPlayer)} />
+          <StatsBar stats={game.getStats(MAIN_PLAYER)} />
 
           <FollowUserButton onPress={() => setFollowUserLocation((v) => !v)}>
             <Icon
@@ -132,7 +129,7 @@ export function Main({ initialLocation }: { initialLocation: Coordinate }) {
 
       {game.state.phase === "stats" && (
         <LevelCompleted
-          stats={game.getStats(mainPlayer)}
+          stats={game.getStats(MAIN_PLAYER)}
           onContinue={() => game.updatePhase("highlights")}
         />
       )}
@@ -158,11 +155,16 @@ export function Main({ initialLocation }: { initialLocation: Coordinate }) {
     </Container>
   );
 }
+
+const showAllRewardMarkers = true;
+
 function RewardMarkers({ hexagons }: { hexagons: Hexagon[] }) {
   return (
     <>
       {hexagons
-        .filter((h) => h.reward && h.capturedBy.length > 0)
+        .filter(
+          (h) => h.reward && (showAllRewardMarkers || h.capturedBy.length)
+        )
         .map(({ reward, coordinate }) => (
           <RewardMarker
             key={`${coordinate.latitude}-${coordinate.longitude}`}

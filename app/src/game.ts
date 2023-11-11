@@ -1,5 +1,6 @@
 import * as h3 from "h3-js";
 
+import { MAIN_PLAYER } from "./constants";
 import { isCoordInPolygon, moveCoordinateByKm, useStorageState } from "./utils";
 
 import {
@@ -33,13 +34,15 @@ export function useGame(initialLocation: Coordinate) {
       const isCaptured = isCoordInPolygon(currentLocation, hexagon.h3Index);
       if (!isCaptured) return hexagon;
 
-      if (!hexagon.capturedBy.includes(player)) {
-        hexagon.capturedBy = [...hexagon.capturedBy, player];
-      }
+      const notYetCapturedByPlayer = !hexagon.capturedBy.includes(player);
 
-      // Show the found reward to user
-      if (hexagon.reward) {
-        foundReward = hexagon.reward;
+      if (notYetCapturedByPlayer) {
+        hexagon.capturedBy = [...hexagon.capturedBy, player];
+
+        // Show the found reward to user
+        if (hexagon.reward && player === MAIN_PLAYER) {
+          foundReward = hexagon.reward;
+        }
       }
 
       return hexagon;
