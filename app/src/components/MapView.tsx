@@ -7,7 +7,7 @@ export function MapView(props: MapViewProps) {
       style={{ flex: 1 }}
       provider={PROVIDER_GOOGLE}
       customMapStyle={require("../../assets/maps/map-theme.json")}
-      minZoomLevel={14}
+      minZoomLevel={13}
       maxZoomLevel={17}
       showsUserLocation
     />

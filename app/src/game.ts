@@ -33,7 +33,7 @@ export function createGameState({
     hexagonSize
   );
 
-  const hexagonsH3Indices = h3.gridDisk(h3Index, 6);
+  const hexagonsH3Indices = h3.gridDisk(h3Index, 7);
 
   const hexagons: Array<Hexagon> = hexagonsH3Indices.map((h3Index) => {
     const coord = h3.cellToLatLng(h3Index);
