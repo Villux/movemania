@@ -12,5 +12,11 @@ type Props = {
 export function SimulatedPlayer({ game, player }: Props) {
   const currentCoordinate = useSimulatePlayer({ game, player });
   if (!currentCoordinate) return null;
-  return <Marker coordinate={currentCoordinate} />;
+  return (
+    <Marker
+      coordinate={currentCoordinate}
+      image={require("../assets/images/simulated-player-marker.png")}
+      anchor={{ x: 0.5, y: 0.5 }}
+    />
+  );
 }
