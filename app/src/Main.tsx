@@ -18,8 +18,12 @@ import {
 import { RewardMarker } from "./RewardMarker";
 import { FoundRewardOverlay } from "./FoundRewardOverlay";
 import { player1, player3 } from "./player-simulation-data";
+import ProgressBar from "./ProgressBar";
 import { SimulatedPlayer } from "./SimulatedPlayer";
+import { Stack } from "./components/Stack";
 import { MAIN_PLAYER } from "./constants";
+
+const debug = true;
 
 export function Main({ initialLocation }: { initialLocation: Coordinate }) {
   const game = useGame(initialLocation);
@@ -88,7 +92,7 @@ export function Main({ initialLocation }: { initialLocation: Coordinate }) {
       >
         {game.state.phase === "play" && (
           <>
-            <RewardMarkers hexagons={game.state.hexagons} />
+            {debug && <RewardMarkers hexagons={game.state.hexagons} />}
             <Hexagons hexagons={game.state.hexagons} />
             <SimulatedPlayer game={game} player={player1} />
             <SimulatedPlayer game={game} player={player3} />
@@ -115,7 +119,11 @@ export function Main({ initialLocation }: { initialLocation: Coordinate }) {
 
           <UserAvatar source={require("../assets/images/user-avatar.jpg")} />
 
-          <StatsBar stats={game.getStats(MAIN_PLAYER)} />
+          <Footer axis="y" spacing="xxsmall">
+            <ProgressBar onComplete={() => game.updatePhase("stats")} />
+
+            <StatsBar stats={game.getStats(MAIN_PLAYER)} />
+          </Footer>
 
           <FollowUserButton onPress={() => setFollowUserLocation((v) => !v)}>
             <Icon
@@ -243,4 +251,13 @@ const UserAvatar = styled("Image", {
   borderRadius: 48,
   borderWidth: 2,
   borderColor: "#FFF500",
+});
+
+const Footer = styled(Stack, {
+  position: "absolute",
+  bottom: 0,
+  left: 0,
+  right: 0,
+  zIndex: 100,
+  padding: 20,
 });

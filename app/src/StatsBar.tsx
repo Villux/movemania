@@ -27,7 +27,7 @@ const Square = styled("View", {
   width: 80,
   height: 52,
   borderRadius: 20,
-  padding: 5,
+  padding: 10,
   display: "flex",
   flexDirection: "row",
   alignItems: "center",
@@ -40,12 +40,8 @@ const StatsBarContainer = styled("View", {
   flexDirection: "row",
   alignItems: "center",
   justifyContent: "center",
-  // TODO: make this better
-  marginHorizontal: 10, // Add padding from left and right
-  width: "95%", // Keep width at 100%
+  paddingHorizontal: 10,
   height: 65,
-  position: "absolute",
-  bottom: 20,
   borderRadius: 24,
   backgroundColor: "#00000099",
 });
