@@ -1,5 +1,12 @@
 import { Coordinate } from "./utils";
 
+export type Game = {
+  hexagons: Array<{
+    h3Index: string;
+    isCaptured: boolean;
+  }>;
+};
+
 export type T = {
   coin: number;
   diamond: number;

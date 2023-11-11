@@ -1,6 +1,8 @@
 import { useEffect, useMemo, useState } from "react";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 import * as Location from "expo-location";
 import * as h3 from "h3-js";
+
 import { Reward } from "./types";
 import { rewardAssets } from "../assets/assets";
 
@@ -76,6 +78,21 @@ export function distanceBetweenCoords(coord1: Coordinate, coord2: Coordinate) {
   return R * c; // in meters
 }
 
+export function moveCoordinateByKm({
+  coordinate,
+  km,
+}: {
+  coordinate: Coordinate;
+  km: number;
+}) {
+  const { latitude, longitude } = coordinate;
+  const lat = latitude + (km / 6371) * (180 / Math.PI);
+  const lng =
+    longitude +
+    ((km / 6371) * (180 / Math.PI)) / Math.cos((latitude * Math.PI) / 180);
+  return { latitude: lat, longitude: lng };
+}
+
 const coinProbability = 0.1;
 const diamondProbability = 0.03;
 const keyProbability = 0.01;
@@ -114,3 +131,23 @@ export const useRewardGenerator = (hexagon: string, rewards: Reward[]) => {
 
   return reward;
 };
+
+export function useStorageState<T>(key: string) {
+  const [value, setValue] = useState<T | null>(null);
+
+  useEffect(() => {
+    (async () => {
+      const value = await AsyncStorage.getItem(key);
+      if (value) {
+        setValue(JSON.parse(value) as T);
+      }
+    })();
+  }, [key]);
+
+  const setStorageState = async (value: T) => {
+    await AsyncStorage.setItem(key, JSON.stringify(value));
+    setValue(value);
+  };
+
+  return [value, setStorageState] as const;
+}

@@ -23,7 +23,8 @@
     "react-native-maps": "1.7.1",
     "react-native-reanimated": "~3.3.0",
     "stitches-native": "0.4.0",
-    "expo-font": "~11.4.0"
+    "expo-font": "~11.4.0",
+    "@react-native-async-storage/async-storage": "1.18.2"
   },
   "devDependencies": {
     "@babel/core": "^7.20.0",

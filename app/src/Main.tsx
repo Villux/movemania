@@ -1,32 +1,26 @@
-import * as h3 from "h3-js";
 import LottieView from "lottie-react-native";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 import { Fragment, useEffect, useRef, useState } from "react";
-import { StyleSheet, Text, View } from "react-native";
-
-import MapView, {
-  Marker,
-  PROVIDER_GOOGLE,
-  Polygon,
-  Region,
-  UserLocationChangeEvent,
-} from "react-native-maps";
-
-import {
-  Coordinate,
-  distanceBetweenCoords,
-  isCoordInPolygon,
-  useRewardGenerator,
-} from "./utils";
-import { Reward } from "./types";
+import { StyleSheet, View } from "react-native";
 import { Audio } from "expo-av";
-import { Overlay } from "./components";
+import { Marker, Region, UserLocationChangeEvent } from "react-native-maps";
 
-export default function Main({
+import { Coordinate, distanceBetweenCoords } from "./utils";
+import { Game, Reward } from "./types";
+import { Button, Overlay, MapView, Text } from "./components";
+import { Hexagons } from "./Hexagons";
+import { createGameState } from "./game";
+import { styled } from "./styled";
+
+export function Main({
   initialLocation,
+  persistedGameState,
 }: {
   initialLocation: Coordinate;
+  persistedGameState: null | Game;
 }) {
   const [locations, setLocations] = useState<Coordinate[]>([initialLocation]);
+  const [game, setGame] = useState<Game | null>(persistedGameState);
   const [markersVisible, setMarkersVisible] = useState(true);
   const [rewardFound, setRewardFound] = useState(false);
   /* Store all the rewards in a state variable. */
@@ -40,15 +34,16 @@ export default function Main({
     longitudeDelta: 0.01,
   };
 
-  const hexagonSize = 10;
+  function startGame() {
+    const _game = createGameState({ currentLocation });
+    setGame(_game);
+    AsyncStorage.setItem("game", JSON.stringify(_game));
+  }
 
-  const h3Index = h3.latLngToCell(
-    initialLocation.latitude,
-    initialLocation.longitude,
-    hexagonSize
-  );
-
-  const hexagons = h3.gridDisk(h3Index, 6);
+  function resetGame() {
+    setGame(null);
+    AsyncStorage.removeItem("game");
+  }
 
   function handleUserLocationChange({ nativeEvent }: UserLocationChangeEvent) {
     const { coordinate } = nativeEvent;
@@ -76,62 +71,39 @@ export default function Main({
   return (
     <View style={styles.container}>
       <MapView
-        style={styles.map}
         initialRegion={initialRegion}
-        provider={PROVIDER_GOOGLE}
-        customMapStyle={require("../assets/maps/map-theme.json")}
         onUserLocationChange={handleUserLocationChange}
         onRegionChange={handleRegionChange}
-        minZoomLevel={14}
-        maxZoomLevel={17}
-        followsUserLocation
-        showsUserLocation
       >
-        {hexagons.map((hexagon) => {
-          const isCaptured = locations.some((l) =>
-            isCoordInPolygon(l, hexagon)
-          );
-          const fillColor = `rgba(255, 245, 0, ${isCaptured ? 0.5 : 0.05})`;
-          const strokeColor = isCaptured ? "#fff385" : "#000";
-
-          const coordinates = h3.cellToBoundary(hexagon).map(([lat, lng]) => ({
-            latitude: lat,
-            longitude: lng,
-          }));
-
-          const reward = useRewardGenerator(hexagon, rewards);
-
-          // useEffect(() => {
-          //   if (reward.type && isCaptured) {
-          //     setRewardFound(true);
-          //   }
-          // }, [isCaptured, reward]);
-
-          return (
-            <Fragment key={hexagon}>
-              <Polygon
-                coordinates={coordinates}
-                fillColor={fillColor}
-                strokeColor={strokeColor}
-                strokeWidth={1}
-              />
-              <RewardMarker
-                reward={reward}
-                onPress={() => setRewardFound(true)}
-              />
-              {rewardFound && (
-                <RewardFound
-                  reward={reward}
-                  hide={() => setRewardFound(false)}
-                />
-              )}
-            </Fragment>
-          );
-        })}
+        {!!game && <Hexagons hexagons={game.hexagons} />}
       </MapView>
+
+      {!game ? (
+        <Overlay>
+          <Button onPress={startGame}>Start Game</Button>
+        </Overlay>
+      ) : (
+        <ResetGameButton onPress={resetGame}>
+          <Text>X</Text>
+        </ResetGameButton>
+      )}
     </View>
   );
 }
+
+/*
+ <RewardMarker
+    reward={reward}
+    onPress={() => setRewardFound(true)}
+  />
+  {rewardFound && (
+    <RewardFound
+      reward={reward}
+      hide={() => setRewardFound(false)}
+    />
+  )}
+*/
+
 function RewardFound({ reward, hide }: { reward: Reward; hide: () => void }) {
   const lottieRef = useRef<LottieView>(null);
   if (!reward.type) return null;
@@ -189,8 +161,16 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: "#000",
   },
-  map: {
-    width: "100%",
-    height: "100%",
-  },
+});
+
+const ResetGameButton = styled("TouchableOpacity", {
+  position: "absolute",
+  top: 40,
+  left: 20,
+  backgroundColor: "#000",
+  width: 40,
+  height: 40,
+  borderRadius: 20,
+  alignItems: "center",
+  justifyContent: "center",
 });
