@@ -16,7 +16,7 @@ import { Hexagons } from "./Hexagons";
 import { createGameState } from "./game";
 import { styled } from "./styled";
 import { rewardAssets } from "../assets/assets";
-import StatsBar from "./StatsBar";
+import { StatsBar } from "./StatsBar";
 import { Spacer } from "./Spacer";
 
 export function Main({
@@ -119,7 +119,6 @@ export function Main({
                 />
               ))}
             <Hexagons hexagons={game.hexagons} />
-            <StatsBar game={game} />
           </>
         )}
       </MapView>
@@ -148,6 +147,7 @@ export function Main({
         </Overlay>
       ) : (
         <>
+          <StatsBar game={game} />
           <FollowUserButton onPress={() => setFollowUserLocation((v) => !v)}>
             <Icon
               name="location"

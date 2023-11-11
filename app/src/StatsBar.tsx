@@ -14,7 +14,7 @@ const mock: {
   chest: 0,
 };
 
-export default function StatsBar({ game }: { game: Game }) {
+export function StatsBar({ game }: { game: Game }) {
   return (
     <StatsBarContainer>
       {Object.entries(mock).map(([key, value]) => (
