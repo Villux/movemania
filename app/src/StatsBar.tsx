@@ -5,22 +5,25 @@ import { GameStats, Reward } from "./types";
 import { styled } from "./styled";
 import { rewardAssets } from "../assets/assets";
 import { Text } from "./components";
+import { BlurView } from "expo-blur";
 
 export function StatsBar({ stats }: { stats: GameStats }) {
   return (
-    <StatsBarContainer>
-      {Object.entries(stats).map(([key, value]) => (
-        <Square key={key}>
-          <StatIcon source={rewardAssets[key as Reward].image} />
-          <StatText
-            variant="button"
-            color={value.collected === 0 ? "textMuted" : "primary"}
-          >
-            {value.collected}
-          </StatText>
-        </Square>
-      ))}
-    </StatsBarContainer>
+    <BlurView tint="dark" intensity={40}>
+      <StatsBarContainer>
+        {Object.entries(stats).map(([key, value]) => (
+          <Square key={key}>
+            <StatIcon source={rewardAssets[key as Reward].image} />
+            <StatText
+              variant="button"
+              color={value.collected === 0 ? "textMuted" : "primary"}
+            >
+              {value.collected}
+            </StatText>
+          </Square>
+        ))}
+      </StatsBarContainer>
+    </BlurView>
   );
 }
 
@@ -31,7 +34,7 @@ const StatsBarContainer = styled("View", {
   paddingVertical: 8,
   paddingHorizontal: 12,
   borderRadius: 28,
-  backgroundColor: "rgba(0, 0, 0, 0.6)",
+  backgroundColor: "rgba(0, 0, 0, 0.5)",
 });
 
 const Square = styled("View", {

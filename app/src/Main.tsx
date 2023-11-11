@@ -1,10 +1,10 @@
 import { useRef, useState } from "react";
-import { Image, View } from "react-native";
+import { View } from "react-native";
 import RNMapView, { Region, UserLocationChangeEvent } from "react-native-maps";
 
 import { distanceBetweenCoords } from "./utils";
 import { Reward, Coordinate, Hexagon } from "./types";
-import { MapView, Icon } from "./components";
+import { MapView, Icon, Image } from "./components";
 import { Hexagons } from "./Hexagons";
 import { useGame } from "./game";
 import { styled } from "./styled";
@@ -21,13 +21,13 @@ import { LevelCompletedOverlay } from "./LevelCompletedOverlay";
 import { LevelHighlightsOverlay } from "./LevelHighlightsOverlay";
 import { LevelStartNextOverlay } from "./LevelStartNextOverlay";
 
-const debug = true;
+const debug = false;
 
 export function Main({ initialLocation }: { initialLocation: Coordinate }) {
   const game = useGame(initialLocation);
   const [markersVisible, setMarkersVisible] = useState(true);
   const [foundReward, setFoundReward] = useState<Reward | null>(null);
-  const [followUserLocation, setFollowUserLocation] = useState(false);
+  const [followUserLocation, setFollowUserLocation] = useState(true);
   const lastLocation = useRef<Coordinate>(initialLocation);
   const mapRef = useRef<RNMapView>(null);
 
@@ -98,6 +98,23 @@ export function Main({ initialLocation }: { initialLocation: Coordinate }) {
         )}
       </MapView>
 
+      <Header>
+        <FloatingButton onPress={() => setFollowUserLocation((v) => !v)}>
+          <Icon
+            name="location"
+            size={24}
+            color={followUserLocation ? "primary" : "primaryDark"}
+          />
+        </FloatingButton>
+
+        <Image
+          autoSize={{ height: 24 }}
+          source={require("../assets/images/logo.png")}
+        />
+
+        <UserAvatar source={require("../assets/images/user-avatar.jpg")} />
+      </Header>
+
       {game.state.phase === "start" && (
         <LevelStartOverlay startGame={() => game.updatePhase("play")} />
       )}
@@ -111,12 +128,6 @@ export function Main({ initialLocation }: { initialLocation: Coordinate }) {
             />
           )}
 
-          <LogoContainer>
-            <Logo source={require("../assets/images/logo.png")} />
-          </LogoContainer>
-
-          <UserAvatar source={require("../assets/images/user-avatar.jpg")} />
-
           <Footer axis="y" spacing="xxsmall">
             <ProgressBar
               hexagons={game.state.hexagons}
@@ -126,22 +137,17 @@ export function Main({ initialLocation }: { initialLocation: Coordinate }) {
             <StatsBar stats={game.getStats(MAIN_PLAYER)} />
           </Footer>
 
-          <FollowUserButton onPress={() => setFollowUserLocation((v) => !v)}>
-            <Icon
-              name="location"
-              size={24}
-              color={followUserLocation ? "primary" : "primaryDark"}
-            />
-          </FollowUserButton>
+          {debug && (
+            <>
+              <ResetGameButton onPress={game.resetGame}>
+                <Icon name="reset" size={24} color="primary" />
+              </ResetGameButton>
 
-          {/* TODO: remove these!!! */}
-          <ResetGameButton onPress={game.resetGame}>
-            <Icon name="reset" size={24} color="primary" />
-          </ResetGameButton>
-
-          <FinishGameButton onPress={() => game.updatePhase("stats")}>
-            <Icon name="reset" size={24} color="primary" />
-          </FinishGameButton>
+              <FinishGameButton onPress={() => game.updatePhase("stats")}>
+                <Icon name="check" size={24} color="primary" />
+              </FinishGameButton>
+            </>
+          )}
         </>
       )}
 
@@ -190,18 +196,17 @@ const Container = styled(View, {
   backgroundColor: "#000",
 });
 
-const LogoContainer = styled(View, {
-  zIndex: 100,
-  display: "flex",
+const Header = styled("View", {
+  flexDirection: "row",
+  position: "absolute",
+  top: 60,
+  left: 16,
+  right: 16,
   alignItems: "center",
-  justifyContent: "center",
-  marginHorizontal: "auto",
+  justifyContent: "space-between",
 });
 
-const FollowUserButton = styled("TouchableOpacity", {
-  position: "absolute",
-  top: 40,
-  left: 20,
+const FloatingButton = styled("TouchableOpacity", {
   backgroundColor: "#000",
   width: 40,
   height: 40,
@@ -210,43 +215,20 @@ const FollowUserButton = styled("TouchableOpacity", {
   justifyContent: "center",
 });
 
-const ResetGameButton = styled("TouchableOpacity", {
+const ResetGameButton = styled(FloatingButton, {
   position: "absolute",
-  top: 90,
-  left: 20,
-  backgroundColor: "#000",
-  width: 40,
-  height: 40,
-  borderRadius: 20,
-  alignItems: "center",
-  justifyContent: "center",
+  top: 112,
+  left: 16,
 });
 
-const FinishGameButton = styled("TouchableOpacity", {
+const FinishGameButton = styled(FloatingButton, {
   position: "absolute",
-  top: 140,
-  left: 20,
-  backgroundColor: "#000",
-  width: 40,
-  height: 40,
-  borderRadius: 20,
-  alignItems: "center",
-  justifyContent: "center",
-});
-
-const Logo = styled(Image, {
-  zIndex: 100,
-  width: 150,
-  height: 34,
-  top: 72,
-  marginHorizontal: "auto",
+  top: 162,
+  left: 16,
 });
 
 const UserAvatar = styled("Image", {
   zIndex: 100,
-  position: "absolute",
-  top: 72,
-  right: 20,
   width: 40,
   height: 40,
   borderRadius: 48,
