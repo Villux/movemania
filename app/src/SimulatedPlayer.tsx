@@ -3,7 +3,6 @@ import { Marker } from "react-native-maps";
 import { SimulatedPlayer as SimulatedPlayerType } from "./types";
 import { useSimulatePlayer } from "./player-simulation";
 import { useGame } from "./game";
-import { useState } from "react";
 
 type Props = {
   player: SimulatedPlayerType;
@@ -15,17 +14,19 @@ export function sleep(ms: number) {
 }
 
 export function SimulatedPlayer({ game, player }: Props) {
-  const [playerUsingApp, setPlayerUsingApp] = useState(false);
+  // Enable simulated player when there are at least 3 hexagons captured
+  // by the main player
+  const enabled =
+    game.state.phase === "play" &&
+    game.state.hexagons.map((h) => h.capturedBy.length > 0).filter(Boolean)
+      .length > 5;
 
-  const currentCoordinate = useSimulatePlayer({ game, player });
-
-  // TODO: Put simulatenousplayers to 2
-  if (!currentCoordinate || !playerUsingApp) return null;
+  const currentCoordinate = useSimulatePlayer({ game, player, enabled });
 
   return (
     <Marker
       coordinate={currentCoordinate}
-      image={require("../assets/images/user-avatar-3.png")}
+      image={require("../assets/images/simulated-player-marker.png")}
       anchor={{ x: 0.5, y: 0.5 }}
     />
   );

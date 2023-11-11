@@ -48,10 +48,10 @@ export function ProgressBar({
 
   const exp = getExp(stats);
 
-  const progress = useSharedValue(50);
+  const progress = useSharedValue(0);
 
   useEffect(() => {
-    progress.value = withTiming(50, { duration: 100 });
+    progress.value = withTiming(exp, { duration: 100 });
   }, [exp, stats]);
 
   const progressStyle = useAnimatedStyle(() => {

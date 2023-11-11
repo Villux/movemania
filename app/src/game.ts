@@ -41,6 +41,10 @@ export function useGame(initialLocation: Coordinate) {
     // Nothing to update and no reward found
     if (hexagonIndex === -1) return;
 
+    if (state.gameState.simultaneousPlayers === 1 && player !== MAIN_PLAYER) {
+      state.gameState.simultaneousPlayers = 2;
+    }
+
     const hexagon = state.hexagons[hexagonIndex];
 
     const notCapturedByPlayer = !hexagon.capturedBy.includes(player);
