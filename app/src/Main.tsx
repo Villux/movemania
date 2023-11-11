@@ -16,6 +16,8 @@ import { Hexagons } from "./Hexagons";
 import { createGameState } from "./game";
 import { styled } from "./styled";
 import { rewardAssets } from "../assets/assets";
+import StatsBar from "./StatsBar";
+import { Spacer } from "./Spacer";
 
 export function Main({
   initialLocation,
@@ -117,6 +119,7 @@ export function Main({
                 />
               ))}
             <Hexagons hexagons={game.hexagons} />
+            <StatsBar game={game} />
           </>
         )}
       </MapView>
@@ -268,10 +271,6 @@ const Logo = styled(Image, {
 const LevelView = styled(View, {
   borderRadius: 10,
   display: "flex",
-});
-
-const Spacer = styled(View, {
-  height: 20,
 });
 
 const LevelText = styled(Text, {
