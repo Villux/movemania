@@ -12,7 +12,10 @@ export function StatsBar({ stats }: { stats: GameStats }) {
       {Object.entries(stats).map(([key, value]) => (
         <Square key={key}>
           <StatIcon source={rewardAssets[key as Reward].image} />
-          <StatText color={value.collected === 0 ? "textMuted" : "primary"}>
+          <StatText
+            variant="button"
+            color={value.collected === 0 ? "textMuted" : "primary"}
+          >
             {value.collected}
           </StatText>
         </Square>
@@ -21,40 +24,33 @@ export function StatsBar({ stats }: { stats: GameStats }) {
   );
 }
 
+const StatsBarContainer = styled("View", {
+  display: "flex",
+  flexDirection: "row",
+  gap: 8,
+  paddingVertical: 8,
+  paddingHorizontal: 12,
+  borderRadius: 28,
+  backgroundColor: "rgba(0, 0, 0, 0.6)",
+});
+
 const Square = styled("View", {
   backgroundColor: "rgba(255, 255, 255, 0.1)",
-  margin: 5,
-  width: 80,
-  height: 52,
   borderRadius: 20,
-  padding: 10,
+  padding: 8,
+  flex: 1,
   display: "flex",
   flexDirection: "row",
   alignItems: "center",
   justifyContent: "space-around",
 });
 
-const StatsBarContainer = styled("View", {
-  zIndex: 100,
-  display: "flex",
-  flexDirection: "row",
-  alignItems: "center",
-  justifyContent: "center",
-  paddingHorizontal: 10,
-  height: 65,
-  borderRadius: 24,
-  backgroundColor: "#00000099",
-});
-
 const StatIcon = styled(Image, {
-  width: 30,
-  height: 30,
-  marginBottom: 5,
+  width: 32,
+  height: 32,
 });
 
 const StatText = styled(Text, {
-  fontFamily: "Jomhuria",
   fontSize: 32,
-  lineHeight: 32,
-  textAlign: "left",
+  marginTop: 4, // stupid fix for visually centering the text...
 });

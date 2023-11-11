@@ -121,7 +121,6 @@ export function Main({ initialLocation }: { initialLocation: Coordinate }) {
 
           <Footer axis="y" spacing="xxsmall">
             <ProgressBar onComplete={() => game.updatePhase("stats")} />
-
             <StatsBar stats={game.getStats(MAIN_PLAYER)} />
           </Footer>
 
@@ -153,7 +152,7 @@ export function Main({ initialLocation }: { initialLocation: Coordinate }) {
           </ResetGameButton>
 
           <FinishGameButton onPress={() => game.updatePhase("stats")}>
-            <Icon name="reset" size={24} color="primaryDark" />
+            <Icon name="reset" size={24} color="primary" />
           </FinishGameButton>
         </>
       )}
@@ -255,9 +254,8 @@ const UserAvatar = styled("Image", {
 
 const Footer = styled(Stack, {
   position: "absolute",
-  bottom: 0,
-  left: 0,
-  right: 0,
+  bottom: 24,
+  left: 16,
+  right: 16,
   zIndex: 100,
-  padding: 20,
 });

@@ -15,7 +15,7 @@ export default function ProgressBar({
   const progress = useSharedValue(0);
 
   useEffect(() => {
-    progress.value = withTiming(100, { duration: 10000 });
+    progress.value = withTiming(100, { duration: 100000 });
   }, []);
 
   const progressStyle = useAnimatedStyle(() => {
@@ -42,7 +42,6 @@ const Container = styled(View, {
   height: 8,
   margin: 10,
   borderRadius: 999,
-
   backgroundColor: "#00000080",
 });
 
