@@ -1,4 +1,3 @@
-import { rewardAssets } from "../assets/assets";
 import { Coordinate } from "./utils";
 
 export type Reward = {

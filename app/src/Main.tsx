@@ -1,7 +1,8 @@
 import * as h3 from "h3-js";
 import LottieView from "lottie-react-native";
 import { Fragment, useEffect, useRef, useState } from "react";
-import { StyleSheet, Text, View } from "react-native";
+import { StyleSheet, View } from "react-native";
+import { Audio } from "expo-av";
 
 import MapView, {
   Marker,
@@ -17,15 +18,11 @@ import {
   isCoordInPolygon,
   useRewardGenerator,
 } from "./utils";
-import Overlay from "./Overlay";
-import { Reward } from "./types";
-import { Audio } from "expo-av";
 
-export default function Main({
-  initialLocation,
-}: {
-  initialLocation: Coordinate;
-}) {
+import { Button, Overlay, Text } from "./components";
+import { Reward } from "./types";
+
+export function Main({ initialLocation }: { initialLocation: Coordinate }) {
   const [locations, setLocations] = useState<Coordinate[]>([initialLocation]);
   const [markersVisible, setMarkersVisible] = useState(true);
   const [rewardFound, setRewardFound] = useState(false);
@@ -129,6 +126,12 @@ export default function Main({
           );
         })}
       </MapView>
+
+      <Overlay>
+        <Text>Test</Text>
+        <Text variant="button">Test</Text>
+        <Button onPress={() => console.log("press")}>Start Game</Button>
+      </Overlay>
     </View>
   );
 }
@@ -150,14 +153,7 @@ function RewardFound({ reward, hide }: { reward: Reward; hide: () => void }) {
   return (
     <Overlay>
       <Fragment>
-        <Text
-          style={{
-            color: "#fff",
-            textAlign: "center",
-            fontWeight: "500",
-            fontSize: 18,
-          }}
-        >
+        <Text style={{ textAlign: "center" }}>
           You've found a ${reward.type}!
         </Text>
         <LottieView
