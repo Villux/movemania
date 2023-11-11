@@ -21,6 +21,7 @@ export function Main({ initialLocation }: { initialLocation: Coordinate }) {
   const [followUserLocation, setFollowUserLocation] = useState(false);
   const lastLocation = useRef<Coordinate>(initialLocation);
   const mapRef = useRef<RNMapView>(null);
+  const debug = true;
 
   const initialRegion = {
     latitude: initialLocation.latitude,
@@ -109,7 +110,17 @@ export function Main({ initialLocation }: { initialLocation: Coordinate }) {
               color={followUserLocation ? "primary" : "primaryDark"}
             />
           </FollowUserButton>
+        </>
+      )}
 
+      {game.phase === "stats" && (
+        <LevelCompleted onContinue={() => updatePhase("highlights")} />
+      )}
+
+      {game.phase === "highlights" && <View>{/* TODO */}</View>}
+
+      {debug && (
+        <>
           <ResetGameButton onPress={resetGame}>
             <Icon name="reset" size={24} color="primary" />
           </ResetGameButton>
@@ -119,12 +130,6 @@ export function Main({ initialLocation }: { initialLocation: Coordinate }) {
           </FinishGameButton>
         </>
       )}
-
-      {game.phase === "stats" && (
-        <LevelCompleted onContinue={() => updatePhase("highlights")} />
-      )}
-
-      {game.phase === "highlights" && <View>{/* TODO */}</View>}
     </Container>
   );
 }
