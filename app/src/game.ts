@@ -60,15 +60,27 @@ export function useGame(initialLocation: Coordinate) {
 
   function getStats(player: string) {
     const stats: GameStats = {
-      coin: 0,
-      diamond: 0,
-      key: 0,
-      chest: 0,
+      coin: {
+        collected: 0,
+        max: MAX_COINS,
+      },
+      diamond: {
+        collected: 0,
+        max: MAX_DIAMONDS,
+      },
+      key: {
+        collected: 0,
+        max: MAX_KEYS,
+      },
+      chest: {
+        collected: 0,
+        max: MAX_CHESTS,
+      },
     };
 
     state.hexagons.forEach((hexagon) => {
       if (hexagon.capturedBy?.includes(player) && hexagon.reward) {
-        stats[hexagon.reward] += 1;
+        stats[hexagon.reward].collected += 1;
       }
     });
 

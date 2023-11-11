@@ -5,6 +5,7 @@ import { Audio } from "expo-av";
 import { Reward } from "./types";
 import { Overlay, Text } from "./components";
 import { rewardAssets } from "../assets/assets";
+import { Stack } from "./components/Stack";
 
 export function FoundRewardOverlay({
   reward,
@@ -28,7 +29,7 @@ export function FoundRewardOverlay({
 
   return (
     <Overlay>
-      <Fragment>
+      <Stack axis="y" spacing="none" style={{ margin: 26 }}>
         <Text style={{ textAlign: "center" }}>You've found a {reward}!</Text>
         <LottieView
           ref={lottieRef}
@@ -39,7 +40,7 @@ export function FoundRewardOverlay({
           source={assets.animation}
           onAnimationFinish={() => hide()}
         />
-      </Fragment>
+      </Stack>
     </Overlay>
   );
 }

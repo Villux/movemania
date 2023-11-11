@@ -12,8 +12,8 @@ export function StatsBar({ stats }: { stats: GameStats }) {
       {Object.entries(stats).map(([key, value]) => (
         <Square key={key}>
           <StatIcon source={rewardAssets[key as Reward].image} />
-          <StatText color={value === 0 ? "textMuted" : "primary"}>
-            {value}
+          <StatText color={value.collected === 0 ? "textMuted" : "primary"}>
+            {value.collected}
           </StatText>
         </Square>
       ))}

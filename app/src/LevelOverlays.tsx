@@ -1,88 +1,110 @@
-import { View } from "react-native";
 import React from "react";
 import { styled } from "./styled";
 import { Button, Overlay, Text } from "./components";
-import { Spacer } from "./Spacer";
-import { Reward } from "./types";
+import { GameStats, Reward } from "./types";
 import { rewardAssets } from "../assets/assets";
+import HighlightSelector from "./HighlightSelector";
+import { Stack } from "./components/Stack";
+import { Image } from "react-native";
 
 export function LevelStart({ startGame }: { startGame: () => void }) {
   return (
     <Overlay>
-      <LevelView>
+      <Stack axis="y" spacing="normal">
         <LevelImage source={require("../assets/images/level.jpeg")} />
-        <Spacer />
-        <LevelText color="primary">Level 1</LevelText>
-        <Text>
-          Cyberpirates have seized an area nearby and hidden their treasure all
-          around the area.
-        </Text>
-        <Spacer />
-        <Text>Your job is to find and steal back that treasure.</Text>
-        <Spacer />
-        <LevelButton onPress={startGame}>Start level</LevelButton>
-      </LevelView>
+        <Stack axis="y" spacing="normal" style={{ padding: 26 }}>
+          <LevelText color="primary">Level 1</LevelText>
+          <Text>
+            Cyberpirates have seized an area nearby and hidden their treasure
+            all around the area.
+          </Text>
+
+          <Text>Your job is to find and steal back that treasure.</Text>
+
+          <LevelButton onPress={startGame}>Start level</LevelButton>
+        </Stack>
+      </Stack>
     </Overlay>
   );
 }
 
-const mock: {
-  [key in Reward]: {
-    collected: number;
-    total: number;
-  };
-} = {
-  coin: {
-    collected: 5,
-    total: 10,
-  },
-  diamond: {
-    collected: 0,
-    total: 5,
-  },
-  key: {
-    collected: 1,
-    total: 1,
-  },
-  chest: {
-    collected: 0,
-    total: 1,
-  },
-};
-
-export function LevelCompleted({ onContinue }: { onContinue: () => void }) {
+export function LevelStartNextLevel({ resetGame }: { resetGame: () => void }) {
   return (
     <Overlay>
-      <LevelView>
+      <Stack axis="y" spacing="normal">
         <LevelImage source={require("../assets/images/level.jpeg")} />
-        <Spacer />
-        <LevelText color="primary">Level 1 completed</LevelText>
-        <Spacer />
-        <Text>You collected the following items:</Text>
-        <Spacer />
-        <LevelStatsContainer>
-          {Object.entries(mock).map(([key, value]) => (
-            <LevelStats key={key}>
-              <StatIcon source={rewardAssets[key as Reward].image} />
+        <Stack axis="y" spacing="normal" style={{ padding: 26 }}>
+          <LevelText color="primary">Level 2</LevelText>
+          <Text>Give a new description for the next level</Text>
 
-              <StatText color={value.collected === 0 ? "textMuted" : "primary"}>
-                {value.collected}/{value.total} {key}
-              </StatText>
-            </LevelStats>
-          ))}
-        </LevelStatsContainer>
-        <Spacer />
+          <Text>Your job is to find and steal back that treasure.</Text>
 
-        <LevelButton onPress={onContinue}>Continue</LevelButton>
-      </LevelView>
+          <LevelButton onPress={resetGame}>Start level</LevelButton>
+        </Stack>
+      </Stack>
     </Overlay>
   );
 }
 
-const LevelView = styled(View, {
-  borderRadius: 10,
-  display: "flex",
-});
+export function LevelCompleted({
+  stats,
+  onContinue,
+}: {
+  stats: GameStats;
+  onContinue: () => void;
+}) {
+  return (
+    <>
+      <Overlay>
+        <Stack axis="y" spacing="small">
+          <LevelImage source={require("../assets/images/level.jpeg")} />
+          <Stack axis="y" spacing="small" style={{ padding: 26 }}>
+            <LevelText color="primary">Level 1 completed</LevelText>
+
+            <Text>You collected the following items:</Text>
+
+            <LevelStatsContainer>
+              {Object.entries(stats).map(([key, value]) => (
+                <LevelStats key={key}>
+                  <StatIcon source={rewardAssets[key as Reward].image} />
+
+                  <StatText
+                    color={value.collected === 0 ? "textMuted" : "primary"}
+                  >
+                    {value.collected}/{value.max} {key}
+                  </StatText>
+                </LevelStats>
+              ))}
+            </LevelStatsContainer>
+
+            <LevelButton onPress={onContinue}>Continue</LevelButton>
+          </Stack>
+        </Stack>
+      </Overlay>
+    </>
+  );
+}
+
+export function LevelHighlights({ onContinue }: { onContinue: () => void }) {
+  return (
+    <Overlay>
+      <Stack axis="y" spacing="none" justify="center" align="center">
+        <Image source={require("../assets/images/highlights.png")} />
+        <Stack axis="y" spacing="small" style={{ padding: 26 }}>
+          <LevelText color="primary">Team highlights</LevelText>
+
+          <Text>Pick one of your teammates accomplishments to highlight:</Text>
+
+          <LevelStatsContainer>
+            <HighlightSelector />
+          </LevelStatsContainer>
+
+          <LevelButton onPress={onContinue}>Finish</LevelButton>
+        </Stack>
+      </Stack>
+    </Overlay>
+  );
+}
 
 const LevelText = styled(Text, {
   fontFamily: "Jomhuria",
@@ -96,7 +118,7 @@ const LevelButton = styled(Button, {
 
 const LevelImage = styled("Image", {
   width: "100%",
-  height: 150,
+  height: 200,
   borderRadius: 24,
 });
 

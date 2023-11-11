@@ -19,7 +19,7 @@ export type GamePhase =
   | "highlights"
   | "next-level"; // fake phase for displaying the next level
 
-export type GameStats = Record<Reward, number>;
+export type GameStats = Record<Reward, { collected: number; max: number }>;
 
 export type Game = {
   hexagons: Hexagon[];

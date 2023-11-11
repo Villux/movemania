@@ -9,7 +9,12 @@ import { Hexagons } from "./Hexagons";
 import { useGame } from "./game";
 import { styled } from "./styled";
 import { StatsBar } from "./StatsBar";
-import { LevelCompleted, LevelStart } from "./LevelOverlays";
+import {
+  LevelCompleted,
+  LevelHighlights,
+  LevelStart,
+  LevelStartNextLevel,
+} from "./LevelOverlays";
 import { RewardMarker } from "./RewardMarker";
 import { FoundRewardOverlay } from "./FoundRewardOverlay";
 import { useSimulatePlayer } from "./player-simulation";
@@ -17,6 +22,8 @@ import { player1, player2, player3 } from "./player-simulation-data";
 import { SimulatedPlayer } from "./SimulatedPlayer";
 
 const mainPlayer = "Teemu";
+
+const debug = true;
 
 export function Main({ initialLocation }: { initialLocation: Coordinate }) {
   const game = useGame(initialLocation);
@@ -76,10 +83,6 @@ export function Main({ initialLocation }: { initialLocation: Coordinate }) {
 
   return (
     <Container>
-      <LogoContainer>
-        <Logo source={require("../assets/images/logo.png")} />
-      </LogoContainer>
-
       <MapView
         mapRef={mapRef}
         initialRegion={initialRegion}
@@ -88,7 +91,7 @@ export function Main({ initialLocation }: { initialLocation: Coordinate }) {
       >
         {game.state.phase === "play" && (
           <>
-            <RewardMarkers hexagons={game.state.hexagons} />
+            {debug && <RewardMarkers hexagons={game.state.hexagons} />}
             <Hexagons hexagons={game.state.hexagons} />
             <SimulatedPlayer game={game} player={player1} />
             <SimulatedPlayer game={game} player={player3} />
@@ -109,6 +112,12 @@ export function Main({ initialLocation }: { initialLocation: Coordinate }) {
             />
           )}
 
+          <LogoContainer>
+            <Logo source={require("../assets/images/logo.png")} />
+          </LogoContainer>
+
+          <UserAvatar source={require("../assets/images/user-avatar.jpg")} />
+
           <StatsBar stats={game.getStats(mainPlayer)} />
 
           <FollowUserButton onPress={() => setFollowUserLocation((v) => !v)}>
@@ -122,10 +131,15 @@ export function Main({ initialLocation }: { initialLocation: Coordinate }) {
       )}
 
       {game.state.phase === "stats" && (
-        <LevelCompleted onContinue={() => game.updatePhase("highlights")} />
+        <LevelCompleted
+          stats={game.getStats(mainPlayer)}
+          onContinue={() => game.updatePhase("highlights")}
+        />
       )}
 
-      {game.state.phase === "highlights" && <View>{/* TODO */}</View>}
+      {game.state.phase === "highlights" && (
+        <LevelHighlights onContinue={() => game.updatePhase("next-level")} />
+      )}
 
       {(game.state.phase === "play" || game.state.phase === "highlights") && (
         <>
@@ -138,10 +152,12 @@ export function Main({ initialLocation }: { initialLocation: Coordinate }) {
           </FinishGameButton>
         </>
       )}
+      {game.state.phase === "next-level" && (
+        <LevelStartNextLevel resetGame={game.resetGame} />
+      )}
     </Container>
   );
 }
-
 function RewardMarkers({ hexagons }: { hexagons: Hexagon[] }) {
   return (
     <>
@@ -213,4 +229,16 @@ const Logo = styled(Image, {
   height: 34,
   top: 72,
   marginHorizontal: "auto",
+});
+
+const UserAvatar = styled("Image", {
+  zIndex: 100,
+  position: "absolute",
+  top: 72,
+  right: 20,
+  width: 40,
+  height: 40,
+  borderRadius: 48,
+  borderWidth: 2,
+  borderColor: "#FFF500",
 });
