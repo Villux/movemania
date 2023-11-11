@@ -37,6 +37,7 @@ const getRewardProbability = (
   ) {
     probability = 1;
   }
+
   // for safety...
   return Math.max(0, Math.min(probability, 1));
 };
@@ -59,26 +60,26 @@ export const achieveReward = (
     (gameState.collectedTiles / gameState.tilesToLevelUp) *
       gameState.tilesExtensionRation;
 
-  let r = null;
-
-  Object.values(rewardStates).forEach((reward) => {
+  for (let reward of Object.values(rewardStates)) {
     // check if reward is already fully collected in collectedRewards
-    if (reward.foundCount < reward.maxCount) {
-      const probability = getRewardProbability(
-        reward,
-        gameState,
-        ratioOfTilesLeft
-      );
-
-      console.log("> probability", probability);
-
-      if (Math.random() <= probability) {
-        r = reward.name;
-      }
+    if (reward.foundCount >= reward.maxCount) {
+      continue;
     }
-  });
 
-  return r;
+    const probability = getRewardProbability(
+      reward,
+      gameState,
+      ratioOfTilesLeft
+    );
+
+    console.log("> Probability", reward.name, probability);
+
+    if (Math.random() <= probability) {
+      return reward.name;
+    }
+  }
+
+  return null;
 };
 
 export const getReward = ({
@@ -88,10 +89,6 @@ export const getReward = ({
   gameState: GameState;
   rewardState: Record<Reward, RewardState>;
 }) => {
-  gameState.collectedTiles += 1;
-
-  if (gameState.collectedTiles < 3) return null;
-
   const reward = achieveReward(rewardState, gameState);
 
   gameState.tilesCollectedSinceLastReward += 1;
@@ -101,6 +98,11 @@ export const getReward = ({
     const state = rewardState[reward];
     state.foundCount += 1;
   }
+
+  gameState.collectedTiles += 1;
+
+  // Doesn't make sense to return rewards too soon
+  if (gameState.collectedTiles < 4) return null;
 
   return reward;
 };
