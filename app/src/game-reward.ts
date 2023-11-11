@@ -10,8 +10,8 @@ const getRewardProbability = (
   let probability = DEFAULT_PROBABILITY;
 
   // calculate probability based on the target amount of tiles and level size
-  if (reward.aimCount > 0) {
-    probability = reward.aimCount / gameState.tilesToLevelUp;
+  if (reward.maxCount > 0) {
+    probability = reward.maxCount / gameState.tilesToLevelUp;
   }
 
   // use fixed probability if set
@@ -32,8 +32,8 @@ const getRewardProbability = (
   // remaining rewards need to be given quicker
   if (
     ratioOfTilesLeft < gameState.lastTileRation &&
-    reward.aimCount > 0 &&
-    reward.foundCount < reward.aimCount
+    reward.maxCount > 0 &&
+    reward.foundCount < reward.maxCount
   ) {
     probability = 1;
   }

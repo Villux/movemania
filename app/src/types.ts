@@ -24,7 +24,6 @@ export type GameStats = Record<Reward, { collected: number; max: number }>;
 export type RewardState = {
   name: Reward;
   foundCount: number;
-  aimCount: number;
   maxCount: number;
   fixedProbability?: number;
 };

@@ -132,26 +132,22 @@ function createGame(initialLocation: Coordinate): Game {
       coin: {
         name: "coin",
         foundCount: 0,
-        aimCount: 2,
         maxCount: 3,
       },
       gem: {
         name: "gem",
         foundCount: 0,
-        aimCount: 1,
         maxCount: 2,
       },
       chest: {
         name: "chest",
         foundCount: 0,
-        aimCount: 0,
         maxCount: 1,
         fixedProbability: 0.02,
       },
       key: {
         name: "key",
         foundCount: 0,
-        aimCount: 0,
         maxCount: 1,
         fixedProbability: 0.02,
       },
