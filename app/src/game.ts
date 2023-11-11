@@ -1,6 +1,8 @@
 import * as h3 from "h3-js";
+import { useMemo } from "react";
 
 import { isCoordInPolygon, moveCoordinateByKm, useStorageState } from "./utils";
+
 import {
   Coordinate,
   Game,
@@ -9,7 +11,6 @@ import {
   Hexagon,
   Reward,
 } from "./types";
-import { useMemo } from "react";
 
 const MAX_COINS = 5;
 const MAX_DIAMONDS = 3;
@@ -34,7 +35,10 @@ export function useGame(initialLocation: Coordinate) {
         foundReward = hexagon.reward;
       }
 
-      return { ...hexagon, capturedBy: playerName };
+      return {
+        ...hexagon,
+        capturedBy: isCaptured ? playerName : null,
+      };
     });
 
     setState({ ...state, hexagons: updatedHexagons });
