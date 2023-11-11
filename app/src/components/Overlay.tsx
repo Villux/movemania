@@ -10,13 +10,16 @@ export function Overlay({ children }: { children: ReactNode }) {
       intensity={50}
       style={{
         ...StyleSheet.absoluteFillObject,
+        flexDirection: "row",
         alignItems: "center",
         justifyContent: "center",
+        padding: 12,
       }}
     >
       <Animated.View
         entering={FadeIn}
         style={{
+          overflow: "hidden",
           borderRadius: 24,
           borderWidth: StyleSheet.hairlineWidth,
           borderColor: "rgba(150, 150, 150, 0.4)",

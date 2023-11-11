@@ -18,8 +18,11 @@ const MAX_KEYS = 1;
 const MAX_CHESTS = 1;
 
 export function useGame(initialLocation: Coordinate) {
-  const [_state, setState] = useStorageState<Game>("game");
-  const state = _state || createGame(initialLocation);
+  const [_state, setState] = useStorageState<Game>("game", () =>
+    createGame(initialLocation)
+  );
+
+  const state = _state!; // hack to get rid of the null...
 
   function updateHexagons({
     player,
@@ -67,7 +70,7 @@ export function useGame(initialLocation: Coordinate) {
         collected: 0,
         max: MAX_COINS,
       },
-      diamond: {
+      gem: {
         collected: 0,
         max: MAX_DIAMONDS,
       },
@@ -101,7 +104,7 @@ function createGame(initialLocation: Coordinate): Game {
 
   const rewardAssigments: Record<Reward, number> = {
     coin: 0,
-    diamond: 0,
+    gem: 0,
     key: 0,
     chest: 0,
   };
@@ -116,7 +119,7 @@ function createGame(initialLocation: Coordinate): Game {
   const hasAssignedAllRewards = () => {
     return (
       rewardAssigments.coin === MAX_COINS &&
-      rewardAssigments.diamond === MAX_DIAMONDS &&
+      rewardAssigments.gem === MAX_DIAMONDS &&
       rewardAssigments.key === MAX_KEYS &&
       rewardAssigments.chest === MAX_CHESTS
     );
@@ -180,11 +183,11 @@ function assignReward(
     rewardAssigments.key += 1;
     hexagon.reward = "key";
   } else if (
-    rewardAssigments.diamond < MAX_DIAMONDS &&
+    rewardAssigments.gem < MAX_DIAMONDS &&
     random <= diamondProbability
   ) {
-    rewardAssigments.diamond += 1;
-    hexagon.reward = "diamond";
+    rewardAssigments.gem += 1;
+    hexagon.reward = "gem";
   } else if (rewardAssigments.coin < MAX_COINS && random <= coinProbability) {
     rewardAssigments.coin += 1;
     hexagon.reward = "coin";

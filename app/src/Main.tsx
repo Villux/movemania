@@ -9,19 +9,17 @@ import { Hexagons } from "./Hexagons";
 import { useGame } from "./game";
 import { styled } from "./styled";
 import { StatsBar } from "./StatsBar";
-import {
-  LevelCompleted,
-  LevelHighlights,
-  LevelStart,
-  LevelStartNextLevel,
-} from "./LevelOverlays";
 import { RewardMarker } from "./RewardMarker";
 import { FoundRewardOverlay } from "./FoundRewardOverlay";
 import { player1, player3 } from "./player-simulation-data";
-import ProgressBar from "./ProgressBar";
+import { ProgressBar } from "./ProgressBar";
 import { SimulatedPlayer } from "./SimulatedPlayer";
 import { Stack } from "./components/Stack";
 import { MAIN_PLAYER } from "./constants";
+import { LevelStartOverlay } from "./LevelStartOverlay";
+import { LevelCompletedOverlay } from "./LevelCompletedOverlay";
+import { LevelHighlightsOverlay } from "./LevelHighlightsOverlay";
+import { LevelStartNextOverlay } from "./LevelStartNextOverlay";
 
 const debug = true;
 
@@ -101,7 +99,7 @@ export function Main({ initialLocation }: { initialLocation: Coordinate }) {
       </MapView>
 
       {game.state.phase === "start" && (
-        <LevelStart startGame={() => game.updatePhase("play")} />
+        <LevelStartOverlay startGame={() => game.updatePhase("play")} />
       )}
 
       {game.state.phase === "play" && (
@@ -135,22 +133,8 @@ export function Main({ initialLocation }: { initialLocation: Coordinate }) {
               color={followUserLocation ? "primary" : "primaryDark"}
             />
           </FollowUserButton>
-        </>
-      )}
 
-      {game.state.phase === "stats" && (
-        <LevelCompleted
-          stats={game.getStats(MAIN_PLAYER)}
-          onContinue={() => game.updatePhase("highlights")}
-        />
-      )}
-
-      {game.state.phase === "highlights" && (
-        <LevelHighlights onContinue={() => game.updatePhase("next-level")} />
-      )}
-
-      {(game.state.phase === "play" || game.state.phase === "highlights") && (
-        <>
+          {/* TODO: remove these!!! */}
           <ResetGameButton onPress={game.resetGame}>
             <Icon name="reset" size={24} color="primary" />
           </ResetGameButton>
@@ -160,8 +144,22 @@ export function Main({ initialLocation }: { initialLocation: Coordinate }) {
           </FinishGameButton>
         </>
       )}
+
+      {game.state.phase === "stats" && (
+        <LevelCompletedOverlay
+          stats={game.getStats(MAIN_PLAYER)}
+          onContinue={() => game.updatePhase("highlights")}
+        />
+      )}
+
+      {game.state.phase === "highlights" && (
+        <LevelHighlightsOverlay
+          onContinue={() => game.updatePhase("next-level")}
+        />
+      )}
+
       {game.state.phase === "next-level" && (
-        <LevelStartNextLevel resetGame={game.resetGame} />
+        <LevelStartNextOverlay resetGame={game.resetGame} />
       )}
     </Container>
   );

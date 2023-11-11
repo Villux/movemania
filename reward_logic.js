@@ -21,7 +21,7 @@ const rewardsStates = [
     maxCount: 5,
   },
   {
-    name: "diamond",
+    name: "gem",
     foundCount: 0,
     aimCount: 1,
     maxCount: 2,

@@ -4,7 +4,7 @@ export const rewardAssets = {
     animation: require("./animations/coin.json"),
     sound: require("./sounds/coin.wav"),
   },
-  diamond: {
+  gem: {
     image: require("./images/diamond.png"),
     animation: require("./animations/diamond.json"),
     sound: require("./sounds/diamond.mp3"),

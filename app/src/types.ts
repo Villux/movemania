@@ -3,7 +3,7 @@ export type Coordinate = {
   longitude: number;
 };
 
-export type Reward = "coin" | "diamond" | "key" | "chest";
+export type Reward = "coin" | "gem" | "key" | "chest";
 
 export type Hexagon = {
   h3Index: string;

@@ -21,6 +21,10 @@ export const Text = styled("Text", {
         fontFamily: "$normal",
         fontSize: 18,
       },
+      title: {
+        fontFamily: "$normal",
+        fontSize: 32,
+      },
       button: {
         fontFamily: "$playful",
         fontSize: 40,

@@ -30,7 +30,7 @@ export function Button({ children, ...props }: Props) {
 
   return (
     <ButtonBase {...props} onPress={onPress}>
-      <Text variant="button" color="buttonText">
+      <Text variant="button" color="buttonText" align="center">
         {children}
       </Text>
     </ButtonBase>

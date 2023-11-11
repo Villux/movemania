@@ -86,8 +86,8 @@ export function moveCoordinateByKm({
   return { latitude: lat, longitude: lng };
 }
 
-export function useStorageState<T>(key: string) {
-  const [value, setValue] = useState<T | null>(null);
+export function useStorageState<T>(key: string, getInitialValue: () => T) {
+  const [value, setValue] = useState<T | null>(getInitialValue);
 
   useEffect(() => {
     (async () => {

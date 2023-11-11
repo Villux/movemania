@@ -10,7 +10,7 @@ import { GameStats, Hexagon } from "./types";
 import { Text } from "./components";
 import { Stack } from "./components/Stack";
 
-export default function ProgressBar({
+export function ProgressBar({
   hexagons,
   stats,
   onComplete,
@@ -23,7 +23,7 @@ export default function ProgressBar({
   // The total exp needed to level up is 1000
   // A new tile is worth 50 exp
   // A coin is worth 50 exp
-  // A diamond is worth 100 exp
+  // A gem is worth 100 exp
   // A key is worth 150 exp
   // A chest is worth 200 exp
 
@@ -33,15 +33,15 @@ export default function ProgressBar({
   //       prog += hexagon.capturedBy.includes(MAIN_PLAYER) ? 50 : 0;
   //     }
 
-  //     type Reward = "coin" | "diamond" | "key" | "chest";
+  //     type Reward = "coin" | "gem" | "key" | "chest";
 
   //     type GameStats = Record<Reward, { collected: number; max: number }>;
 
   //     // Get the prog from the stats
-  //     const { coin, diamond, key, chest } = stats;
+  //     const { coin, gem, key, chest } = stats;
 
   //     prog += coin.collected * 5;
-  //     prog += diamond.collected * 10;
+  //     prog += gem.collected * 10;
   //     prog += key.collected * 15;
   //     prog += chest.collected * 20;
 
@@ -119,7 +119,6 @@ const Progress = styled(Animated.View, {
   },
   shadowOpacity: 0.88,
   shadowRadius: 16.0,
-
   elevation: 24,
 });
 
