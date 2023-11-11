@@ -1,10 +1,10 @@
-import { useMemo, useRef } from "react";
+import { useEffect, useMemo, useState } from "react";
 
 import { type useGame } from "./game";
 import { useInterval } from "./utils";
 import { SimulatedPlayer } from "./types";
 
-export function useSimulatePlayers({
+export function useSimulatePlayer({
   player,
   game,
 }: {
@@ -13,10 +13,16 @@ export function useSimulatePlayers({
 }) {
   const intervalMs = useMemo(() => 2000 + Math.random() * 2000, []);
   const interval = game.state.phase === "play" ? intervalMs : null;
-  const coordinates = useRef([...player.route]);
+  const [currentCoordinateIndex, setCurrentCoordinateIndex] = useState(0);
 
   useInterval(() => {
-    const coordinate = coordinates.current.shift();
+    if (currentCoordinateIndex < player.route.length - 1) {
+      setCurrentCoordinateIndex((index) => index + 1);
+    }
+  }, interval);
+
+  useEffect(() => {
+    const coordinate = player.route[currentCoordinateIndex];
 
     if (coordinate) {
       game.updateHexagons({
@@ -24,5 +30,7 @@ export function useSimulatePlayers({
         currentLocation: coordinate,
       });
     }
-  }, interval);
+  }, [currentCoordinateIndex]);
+
+  return player.route[currentCoordinateIndex];
 }

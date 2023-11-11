@@ -12,8 +12,9 @@ import { StatsBar } from "./StatsBar";
 import { LevelCompleted, LevelStart } from "./LevelOverlays";
 import { RewardMarker } from "./RewardMarker";
 import { FoundRewardOverlay } from "./FoundRewardOverlay";
-import { useSimulatePlayers } from "./player-simulation";
+import { useSimulatePlayer } from "./player-simulation";
 import { player1, player2 } from "./player-simulation-data";
+import { SimulatedPlayer } from "./SimulatedPlayer";
 
 const mainPlayer = "Teemu";
 
@@ -73,9 +74,6 @@ export function Main({ initialLocation }: { initialLocation: Coordinate }) {
     }
   }
 
-  useSimulatePlayers({ game, player: player1 });
-  useSimulatePlayers({ game, player: player2 });
-
   return (
     <Container>
       <LogoContainer>
@@ -92,6 +90,8 @@ export function Main({ initialLocation }: { initialLocation: Coordinate }) {
           <>
             <RewardMarkers hexagons={game.state.hexagons} />
             <Hexagons hexagons={game.state.hexagons} />
+            <SimulatedPlayer game={game} player={player1} />
+            <SimulatedPlayer game={game} player={player2} />
           </>
         )}
       </MapView>
