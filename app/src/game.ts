@@ -11,11 +11,12 @@ import {
   Hexagon,
   Reward,
 } from "./types";
+import { getReward } from "./game-reward";
 
 const MAX_COINS = 5;
-const MAX_DIAMONDS = 5;
-const MAX_KEYS = 3;
-const MAX_CHESTS = 60;
+const MAX_GEMS = 2;
+const MAX_KEYS = 1;
+const MAX_CHESTS = 1;
 
 export function useGame(initialLocation: Coordinate) {
   const [_state, setState] = useStorageState<Game>("game", () =>
@@ -33,25 +34,41 @@ export function useGame(initialLocation: Coordinate) {
   }) {
     let foundReward: Reward | null = null;
 
-    const updatedHexagons = state.hexagons.map((hexagon) => {
-      const isCaptured = isCoordInPolygon(currentLocation, hexagon.h3Index);
-      if (!isCaptured) return hexagon;
-
-      const notYetCapturedByPlayer = !hexagon.capturedBy.includes(player);
-
-      if (notYetCapturedByPlayer) {
-        hexagon.capturedBy = [...hexagon.capturedBy, player];
-
-        // Show the found reward to user
-        if (hexagon.reward && player === MAIN_PLAYER) {
-          foundReward = hexagon.reward;
-        }
-      }
-
-      return hexagon;
+    const hexagonIndex = state.hexagons.findIndex((hexagon) => {
+      return isCoordInPolygon(currentLocation, hexagon.h3Index);
     });
 
-    setState({ ...state, hexagons: updatedHexagons });
+    // Nothing to update and no reward found
+    if (hexagonIndex === -1) return;
+
+    const hexagon = state.hexagons[hexagonIndex];
+
+    const notCapturedByPlayer = !hexagon.capturedBy.includes(player);
+
+    if (notCapturedByPlayer) {
+      if (player === MAIN_PLAYER) {
+        const reward = getReward({
+          gameState: state.gameState,
+          rewardState: state.rewardState,
+        });
+
+        console.log("> Reward", reward);
+
+        hexagon.reward = reward;
+      }
+
+      hexagon.capturedBy = [...hexagon.capturedBy, player];
+
+      // Show the found reward to user
+      if (hexagon.reward && player === MAIN_PLAYER) {
+        foundReward = hexagon.reward;
+      }
+    }
+
+    const newHexagons = [...state.hexagons];
+    newHexagons[hexagonIndex] = hexagon;
+
+    setState({ ...state, hexagons: newHexagons });
 
     return foundReward;
   }
@@ -72,7 +89,7 @@ export function useGame(initialLocation: Coordinate) {
       },
       gem: {
         collected: 0,
-        max: MAX_DIAMONDS,
+        max: MAX_GEMS,
       },
       key: {
         collected: 0,
@@ -100,13 +117,47 @@ function createGame(initialLocation: Coordinate): Game {
   const game: Game = {
     hexagons: [],
     phase: "start",
-  };
-
-  const rewardAssigments: Record<Reward, number> = {
-    coin: 0,
-    gem: 0,
-    key: 0,
-    chest: 0,
+    gameState: {
+      totalTiles: 0,
+      collectedTiles: 0,
+      tilesToLevelUp: 40,
+      tilesExtensionRation: 1.5,
+      simultaneousPlayers: 2,
+      boostEffect: 1.3,
+      tilesCollectedSinceLastReward: 0,
+      lastTileRation: 0.01,
+      lastTilesRewardProbability: 1,
+      probK: -70,
+      consequentRewardProbability: 0.5,
+    },
+    rewardState: {
+      coin: {
+        name: "coin",
+        foundCount: 0,
+        aimCount: 3,
+        maxCount: 5,
+      },
+      gem: {
+        name: "gem",
+        foundCount: 0,
+        aimCount: 1,
+        maxCount: 2,
+      },
+      chest: {
+        name: "chest",
+        foundCount: 0,
+        aimCount: 0,
+        maxCount: 1,
+        fixedProbability: 0.15,
+      },
+      key: {
+        name: "key",
+        foundCount: 0,
+        aimCount: 0,
+        maxCount: 1,
+        fixedProbability: 0.15,
+      },
+    },
   };
 
   const gameLocation = moveCoordinateByKm({
@@ -116,21 +167,7 @@ function createGame(initialLocation: Coordinate): Game {
 
   const hexagons = createHexagons(gameLocation);
 
-  const hasAssignedAllRewards = () => {
-    return (
-      rewardAssigments.coin === MAX_COINS &&
-      rewardAssigments.gem === MAX_DIAMONDS &&
-      rewardAssigments.key === MAX_KEYS &&
-      rewardAssigments.chest === MAX_CHESTS
-    );
-  };
-
-  while (!hasAssignedAllRewards()) {
-    hexagons.forEach((hexagon) => {
-      assignReward(hexagon, rewardAssigments);
-    });
-  }
-
+  game.gameState.totalTiles = hexagons.length;
   game.hexagons = hexagons;
 
   return game;
@@ -162,34 +199,4 @@ function createHexagons(gameLocation: Coordinate) {
   });
 
   return hexagons;
-}
-
-const coinProbability = 0.2;
-const diamondProbability = 0.1;
-const keyProbability = 0.05;
-const chestProbability = 0.05;
-
-// TODO: do not assign a reward if sibling hexagon already has a reward
-
-function assignReward(
-  hexagon: Hexagon,
-  rewardAssigments: Record<Reward, number>
-) {
-  const random = Math.random();
-  if (rewardAssigments.chest < MAX_CHESTS && random <= chestProbability) {
-    rewardAssigments.chest += 1;
-    hexagon.reward = "chest";
-  } else if (rewardAssigments.key < MAX_KEYS && random <= keyProbability) {
-    rewardAssigments.key += 1;
-    hexagon.reward = "key";
-  } else if (
-    rewardAssigments.gem < MAX_DIAMONDS &&
-    random <= diamondProbability
-  ) {
-    rewardAssigments.gem += 1;
-    hexagon.reward = "gem";
-  } else if (rewardAssigments.coin < MAX_COINS && random <= coinProbability) {
-    rewardAssigments.coin += 1;
-    hexagon.reward = "coin";
-  }
 }

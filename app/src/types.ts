@@ -21,9 +21,33 @@ export type GamePhase =
 
 export type GameStats = Record<Reward, { collected: number; max: number }>;
 
+export type RewardState = {
+  name: Reward;
+  foundCount: number;
+  aimCount: number;
+  maxCount: number;
+  fixedProbability?: number;
+};
+
+export type GameState = {
+  totalTiles: number;
+  collectedTiles: number;
+  tilesToLevelUp: number;
+  tilesExtensionRation: number;
+  simultaneousPlayers: number;
+  boostEffect: number;
+  tilesCollectedSinceLastReward: number;
+  lastTileRation: number;
+  lastTilesRewardProbability: number;
+  probK: number;
+  consequentRewardProbability: number;
+};
+
 export type Game = {
   hexagons: Hexagon[];
   phase: GamePhase;
+  gameState: GameState;
+  rewardState: Record<Reward, RewardState>;
 };
 
 export type SimulatedPlayer = {

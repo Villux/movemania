@@ -11,7 +11,7 @@ import { styled } from "./styled";
 import { StatsBar } from "./StatsBar";
 import { RewardMarker } from "./RewardMarker";
 import { FoundRewardOverlay } from "./FoundRewardOverlay";
-import { player1, player3 } from "./player-simulation-data";
+import { player1 } from "./player-simulation-data";
 import { ProgressBar } from "./ProgressBar";
 import { SimulatedPlayer } from "./SimulatedPlayer";
 import { Stack } from "./components/Stack";
@@ -54,7 +54,7 @@ export function Main({ initialLocation }: { initialLocation: Coordinate }) {
         player: MAIN_PLAYER,
       });
 
-      if (!foundReward) {
+      if (!foundReward && rewardForHexagon) {
         setFoundReward(rewardForHexagon);
       }
     }
@@ -92,10 +92,9 @@ export function Main({ initialLocation }: { initialLocation: Coordinate }) {
       >
         {game.state.phase === "play" && (
           <>
-            {debug && <RewardMarkers hexagons={game.state.hexagons} />}
+            <RewardMarkers hexagons={game.state.hexagons} />
             <Hexagons hexagons={game.state.hexagons} />
             <SimulatedPlayer game={game} player={player1} />
-            <SimulatedPlayer game={game} player={player3} />
           </>
         )}
       </MapView>
