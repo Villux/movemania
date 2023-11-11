@@ -94,9 +94,9 @@ export function ProgressBar({
       */}
       <Stack
         axis="x"
-        spacing="xsmall"
+        spacing="xxsmall"
         align="center"
-        style={{ paddingHorizontal: 12 }}
+        style={{ paddingLeft: 12, paddingRight: 16 }}
       >
         <Image source={require("../assets/images/boost.png")} />
         <Container>
