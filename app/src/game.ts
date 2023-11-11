@@ -52,8 +52,6 @@ export function useGame(initialLocation: Coordinate) {
           rewardState: state.rewardState,
         });
 
-        console.log("> Reward", reward);
-
         hexagon.reward = reward;
       }
 
@@ -120,7 +118,7 @@ function createGame(initialLocation: Coordinate): Game {
     gameState: {
       totalTiles: 0,
       collectedTiles: 0,
-      tilesToLevelUp: 40,
+      tilesToLevelUp: 15,
       tilesExtensionRation: 1.5,
       simultaneousPlayers: 2,
       boostEffect: 1.3,
@@ -134,8 +132,8 @@ function createGame(initialLocation: Coordinate): Game {
       coin: {
         name: "coin",
         foundCount: 0,
-        aimCount: 3,
-        maxCount: 5,
+        aimCount: 2,
+        maxCount: 3,
       },
       gem: {
         name: "gem",
@@ -148,14 +146,14 @@ function createGame(initialLocation: Coordinate): Game {
         foundCount: 0,
         aimCount: 0,
         maxCount: 1,
-        fixedProbability: 0.15,
+        fixedProbability: 0.02,
       },
       key: {
         name: "key",
         foundCount: 0,
         aimCount: 0,
         maxCount: 1,
-        fixedProbability: 0.15,
+        fixedProbability: 0.02,
       },
     },
   };

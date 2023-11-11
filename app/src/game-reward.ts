@@ -46,11 +46,7 @@ export const achieveReward = (
   rewardStates: Record<Reward, RewardState>,
   gameState: GameState
 ): Reward | null => {
-  // consecutive rewards only sometimes
-  if (
-    gameState.tilesCollectedSinceLastReward < 1 &&
-    Math.random() > gameState.consequentRewardProbability
-  ) {
+  if (gameState.tilesCollectedSinceLastReward < 1) {
     return null;
   }
 
@@ -71,8 +67,6 @@ export const achieveReward = (
       gameState,
       ratioOfTilesLeft
     );
-
-    console.log("> Probability", reward.name, probability);
 
     if (Math.random() <= probability) {
       return reward.name;
