@@ -1,10 +1,8 @@
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useState } from "react";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import * as Location from "expo-location";
 import * as h3 from "h3-js";
-
-import { Reward } from "./types";
-import { rewardAssets } from "../assets/assets";
+import { Coordinate } from "./types";
 
 export function useLocation() {
   const [location, setLocation] = useState<null | Coordinate>(null);
@@ -28,11 +26,6 @@ export function useLocation() {
 
   return location;
 }
-
-export type Coordinate = {
-  latitude: number;
-  longitude: number;
-};
 
 export function isCoordInPolygon(coord: Coordinate, polygonH3Index: string) {
   const boundary = h3.cellToBoundary(polygonH3Index).map(([lat, lng]) => ({
@@ -92,45 +85,6 @@ export function moveCoordinateByKm({
     ((km / 6371) * (180 / Math.PI)) / Math.cos((latitude * Math.PI) / 180);
   return { latitude: lat, longitude: lng };
 }
-
-const coinProbability = 0.1;
-const diamondProbability = 0.03;
-const keyProbability = 0.01;
-const chestProbability = 0.005;
-
-export const useRewardGenerator = (hexagon: string, rewards: Reward[]) => {
-  // TODO: Limit the number of rewards according to what the user has collected already
-  const reward = useMemo(() => {
-    const getType = (() => {
-      const random = Math.random();
-      if (random < chestProbability) {
-        return "chest";
-      } else if (random < keyProbability) {
-        return "key";
-      } else if (random < diamondProbability) {
-        return "diamond";
-      } else if (random < coinProbability) {
-        return "coin";
-      } else {
-        return null;
-      }
-    }) as () => Reward["type"];
-
-    const type = getType();
-
-    const assets = rewardAssets.find((a) => a.type === type);
-
-    const latLng = h3.cellToLatLng(hexagon);
-    const coordinate = {
-      latitude: latLng[0],
-      longitude: latLng[1],
-    };
-
-    return { type, coordinate, assets };
-  }, [hexagon]);
-
-  return reward;
-};
 
 export function useStorageState<T>(key: string) {
   const [value, setValue] = useState<T | null>(null);
