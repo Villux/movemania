@@ -11,7 +11,7 @@ import RNMapView, {
 
 import { distanceBetweenCoords, isCoordInPolygon } from "./utils";
 import { Game, Reward, Coordinate } from "./types";
-import { Button, Overlay, MapView, Text } from "./components";
+import { Button, Overlay, MapView, Text, Icon } from "./components";
 import { Hexagons } from "./Hexagons";
 import { createGameState } from "./game";
 import { styled } from "./styled";
@@ -98,6 +98,7 @@ export function Main({
       <LogoContainer>
         <Logo source={require("../assets/images/logo.png")} />
       </LogoContainer>
+
       <MapView
         mapRef={mapRef}
         initialRegion={initialRegion}
@@ -106,10 +107,6 @@ export function Main({
       >
         {!!game && (
           <>
-            <FollowUserButton onPress={() => setFollowUserLocation((v) => !v)}>
-              {/* Follow or Stop following */}
-              <Text>{followUserLocation ? "F" : "S"}</Text>
-            </FollowUserButton>
             {game.hexagons
               .filter((h) => h.reward)
               .map(({ reward, coordinate }) => (
@@ -123,12 +120,14 @@ export function Main({
           </>
         )}
       </MapView>
+
       {!!foundReward && (
         <FoundRewardOverlay
           reward={foundReward}
           hide={() => setFoundReward(null)}
         />
       )}
+
       {!game ? (
         <Overlay>
           <LevelView>
@@ -145,9 +144,18 @@ export function Main({
           </LevelView>
         </Overlay>
       ) : (
-        <ResetGameButton onPress={resetGame}>
-          <Text>X</Text>
-        </ResetGameButton>
+        <>
+          <FollowUserButton onPress={() => setFollowUserLocation((v) => !v)}>
+            <Icon
+              name="location"
+              size={24}
+              color={followUserLocation ? "primary" : "primaryDark"}
+            />
+          </FollowUserButton>
+          <ResetGameButton onPress={resetGame}>
+            <Icon name="reset" size={24} color="primary" />
+          </ResetGameButton>
+        </>
       )}
     </Container>
   );
