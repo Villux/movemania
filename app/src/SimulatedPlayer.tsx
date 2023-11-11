@@ -15,7 +15,7 @@ export function SimulatedPlayer({ game, player }: Props) {
   return (
     <Marker
       coordinate={currentCoordinate}
-      image={require("../assets/images/simulated-player-marker.png")}
+      image={require("../assets/images/user-avatar-3.png")}
       anchor={{ x: 0.5, y: 0.5 }}
     />
   );

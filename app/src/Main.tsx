@@ -108,7 +108,7 @@ export function Main({ initialLocation }: { initialLocation: Coordinate }) {
           />
         </FloatingButton>
 
-        <UserAvatar source={require("../assets/images/user-avatar.jpg")} />
+        <UserAvatar source={require("../assets/images/user-avatar-1.png")} />
       </Header>
 
       {game.state.phase === "start" && (

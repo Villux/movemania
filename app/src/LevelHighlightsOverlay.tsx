@@ -43,17 +43,17 @@ const users = [
   {
     name: "Julien",
     description: "Collected most coins",
-    avatar: require("../assets/images/user-avatar.jpg"),
+    avatar: require("../assets/images/user-avatar-3.png"),
   },
   {
-    name: "Teemu",
+    name: "Andreas",
     description: "Walked the most",
-    avatar: require("../assets/images/user-2-avatar.png"),
+    avatar: require("../assets/images/user-avatar-3.png"),
   },
   {
     name: "Ville",
     description: "Found the mystery chest",
-    avatar: require("../assets/images/user-3-avatar.png"),
+    avatar: require("../assets/images/user-avatar-4.png"),
   },
 ];
 

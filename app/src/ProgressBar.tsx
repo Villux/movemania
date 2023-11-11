@@ -67,7 +67,9 @@ export function ProgressBar({
   //   When the bar is full, call the onComplete callback
   useEffect(() => {
     if (progress.value === 100) {
-      onComplete();
+      setTimeout(() => {
+        onComplete();
+      }, 1000);
     }
   }, [progress.value]);
 
