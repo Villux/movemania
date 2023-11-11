@@ -1,8 +1,7 @@
 import * as h3 from "h3-js";
 import LottieView from "lottie-react-native";
 import { Fragment, useEffect, useRef, useState } from "react";
-import { StyleSheet, View } from "react-native";
-import { Audio } from "expo-av";
+import { StyleSheet, Text, View } from "react-native";
 
 import MapView, {
   Marker,
@@ -18,11 +17,15 @@ import {
   isCoordInPolygon,
   useRewardGenerator,
 } from "./utils";
-
-import { Button, Overlay, Text } from "./components";
 import { Reward } from "./types";
+import { Audio } from "expo-av";
+import { Overlay } from "./components";
 
-export function Main({ initialLocation }: { initialLocation: Coordinate }) {
+export default function Main({
+  initialLocation,
+}: {
+  initialLocation: Coordinate;
+}) {
   const [locations, setLocations] = useState<Coordinate[]>([initialLocation]);
   const [markersVisible, setMarkersVisible] = useState(true);
   const [rewardFound, setRewardFound] = useState(false);
@@ -98,11 +101,11 @@ export function Main({ initialLocation }: { initialLocation: Coordinate }) {
 
           const reward = useRewardGenerator(hexagon, rewards);
 
-          useEffect(() => {
-            if (reward.type && isCaptured) {
-              setRewardFound(true);
-            }
-          }, [isCaptured, reward]);
+          // useEffect(() => {
+          //   if (reward.type && isCaptured) {
+          //     setRewardFound(true);
+          //   }
+          // }, [isCaptured, reward]);
 
           return (
             <Fragment key={hexagon}>
@@ -126,23 +129,15 @@ export function Main({ initialLocation }: { initialLocation: Coordinate }) {
           );
         })}
       </MapView>
-
-      <Overlay>
-        <Text>Test</Text>
-        <Text variant="button">Test</Text>
-        <Button onPress={() => console.log("press")}>Start Game</Button>
-      </Overlay>
     </View>
   );
 }
 function RewardFound({ reward, hide }: { reward: Reward; hide: () => void }) {
   const lottieRef = useRef<LottieView>(null);
-
+  if (!reward.type) return null;
   useEffect(() => {
     async function handle() {
-      const { sound } = await Audio.Sound.createAsync(
-        require("../assets/sounds/coin.wav")
-      );
+      const { sound } = await Audio.Sound.createAsync(reward.assets.sound);
       sound.playAsync().catch((e) => console.log(e));
       lottieRef.current?.play();
     }
@@ -154,7 +149,7 @@ function RewardFound({ reward, hide }: { reward: Reward; hide: () => void }) {
     <Overlay>
       <Fragment>
         <Text style={{ textAlign: "center" }}>
-          You've found a ${reward.type}!
+          You've found a {reward.type}!
         </Text>
         <LottieView
           ref={lottieRef}
@@ -162,7 +157,7 @@ function RewardFound({ reward, hide }: { reward: Reward; hide: () => void }) {
           autoPlay={false}
           speed={1.5}
           style={{ width: 200, height: 200 }}
-          source={require("../assets/animations/coin.json")}
+          source={reward.assets.animation}
           onAnimationFinish={() => hide()}
         />
       </Fragment>
@@ -182,7 +177,7 @@ function RewardMarker({
   return (
     <Marker
       coordinate={reward.coordinate}
-      image={require("../assets/images/coin.png")}
+      image={reward.assets.image}
       anchor={{ x: 0.5, y: 0.5 }}
       onPress={onPress}
     />

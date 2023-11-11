@@ -1,8 +1,8 @@
 import { useEffect, useMemo, useState } from "react";
 import * as Location from "expo-location";
 import * as h3 from "h3-js";
-import { rewardAssets } from "../assets/assets";
 import { Reward } from "./types";
+import { rewardAssets } from "../assets/assets";
 
 export function useLocation() {
   const [location, setLocation] = useState<null | Coordinate>(null);
