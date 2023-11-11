@@ -4,7 +4,7 @@ import RNMapView, { Region, UserLocationChangeEvent } from "react-native-maps";
 
 import { distanceBetweenCoords } from "./utils";
 import { Reward, Coordinate, Hexagon } from "./types";
-import { MapView, Icon, Image } from "./components";
+import { MapView, Icon } from "./components";
 import { Hexagons } from "./Hexagons";
 import { useGame } from "./game";
 import { styled } from "./styled";
@@ -127,6 +127,7 @@ export function Main({ initialLocation }: { initialLocation: Coordinate }) {
           <Footer axis="y" spacing="xxsmall">
             <ProgressBar
               collectedTiles={game.state.gameState.collectedTiles}
+              boost={game.state.gameState.simultaneousPlayers > 1}
               stats={game.state.rewardState}
               onComplete={() => game.updatePhase("stats")}
             />

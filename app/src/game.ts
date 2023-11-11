@@ -120,7 +120,7 @@ function createGame(initialLocation: Coordinate): Game {
       collectedTiles: 0,
       tilesToLevelUp: 15,
       tilesExtensionRation: 1.5,
-      simultaneousPlayers: 2,
+      simultaneousPlayers: 1,
       boostEffect: 1.3,
       tilesCollectedSinceLastReward: 0,
       lastTileRation: 0.01,

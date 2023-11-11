@@ -6,15 +6,18 @@ import Animated, {
   withTiming,
 } from "react-native-reanimated";
 import { styled } from "./styled";
-import { Hexagon, Reward, RewardState } from "./types";
+import { Reward, RewardState } from "./types";
 import { Stack } from "./components/Stack";
+import { Text } from "./components";
 
 export function ProgressBar({
   collectedTiles,
+  boost = false,
   stats,
   onComplete,
 }: {
   collectedTiles: number;
+  boost: boolean;
   stats: Record<Reward, RewardState>;
   onComplete: () => void;
 }) {
@@ -45,10 +48,10 @@ export function ProgressBar({
 
   const exp = getExp(stats);
 
-  const progress = useSharedValue(0);
+  const progress = useSharedValue(50);
 
   useEffect(() => {
-    progress.value = withTiming(exp, { duration: 100 });
+    progress.value = withTiming(50, { duration: 100 });
   }, [exp, stats]);
 
   const progressStyle = useAnimatedStyle(() => {
@@ -75,7 +78,7 @@ export function ProgressBar({
 
   return (
     <Stack axis="y" spacing="none">
-      {/* {boost && (
+      {boost && (
         <Boost>
           <Text
             variant="button"
@@ -88,9 +91,7 @@ export function ProgressBar({
           </Text>
         </Boost>
       )}
-      
-      boost && { shadowColor: "#00FF29" }
-      */}
+
       <Stack
         axis="x"
         spacing="xxsmall"
@@ -99,7 +100,9 @@ export function ProgressBar({
       >
         <Image source={require("../assets/images/boost.png")} />
         <Container>
-          <Progress style={progressStyle} />
+          <Progress
+            style={[progressStyle, boost && { shadowColor: "#00FF29" }]}
+          />
         </Container>
       </Stack>
     </Stack>
@@ -122,12 +125,12 @@ const Progress = styled(Animated.View, {
   shadowRadius: 16,
 });
 
-// const Boost = styled(View, {
-//   borderRadius: 4,
-//   position: "absolute",
-//   backgroundColor: "#00FF29",
-//   right: 10,
-//   bottom: 25,
-//   paddingHorizontal: 3,
-//   paddingVertical: 1,
-// });
+const Boost = styled(View, {
+  borderRadius: 4,
+  position: "absolute",
+  backgroundColor: "#00FF29",
+  right: 10,
+  bottom: 25,
+  paddingHorizontal: 3,
+  paddingVertical: 1,
+});

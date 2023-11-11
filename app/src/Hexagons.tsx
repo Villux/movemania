@@ -14,8 +14,6 @@ export function Hexagons({ hexagons }: Props) {
         let strokeColor = "#000";
 
         if (capturedBy.includes("Teemu")) {
-          
-
           // Me and others have captured this hexagon
           if (capturedBy.length > 1) {
             fillColor = "rgba(255, 245, 0, 0.75)";

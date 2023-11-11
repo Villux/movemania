@@ -43,7 +43,7 @@ const users = [
   {
     name: "Julien",
     description: "Collected most coins",
-    avatar: require("../assets/images/user-avatar-3.png"),
+    avatar: require("../assets/images/user-avatar-2.png"),
   },
   {
     name: "Andreas",
