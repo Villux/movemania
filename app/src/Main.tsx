@@ -18,6 +18,7 @@ import { styled } from "./styled";
 import { rewardAssets } from "../assets/assets";
 import { StatsBar } from "./StatsBar";
 import { Spacer } from "./Spacer";
+import { LevelCompleted, LevelStart } from "./LevelOverlays";
 
 export function Main({
   initialLocation,
@@ -32,6 +33,7 @@ export function Main({
   const lastLocation = useRef<Coordinate>(initialLocation);
   const mapRef = useRef<RNMapView>(null);
   const [followUserLocation, setFollowUserLocation] = useState(false);
+  const [isLevelFinish, setIsLevelFinish] = useState(false);
 
   const initialRegion = {
     latitude: initialLocation.latitude,
@@ -46,9 +48,14 @@ export function Main({
     AsyncStorage.setItem("game", JSON.stringify(_game));
   }
 
+  function levelFinish() {
+    setIsLevelFinish(true);
+  }
+
   function resetGame() {
     setGame(null);
     AsyncStorage.removeItem("game");
+    setIsLevelFinish(false);
   }
 
   function handleUserLocationChange({ nativeEvent }: UserLocationChangeEvent) {
@@ -131,20 +138,9 @@ export function Main({
       )}
 
       {!game ? (
-        <Overlay>
-          <LevelView>
-            <LevelImage source={require("../assets/images/level.jpeg")} />
-            <LevelText color="primary">Level 1</LevelText>
-            <Text>
-              Cyberpirates have seized an area nearby and hidden their treasure
-              all around the area.
-            </Text>
-            <Spacer />
-            <Text>Your job is to find and steal back that treasure.</Text>
-            <Spacer />
-            <LevelButton onPress={startGame}>Start level</LevelButton>
-          </LevelView>
-        </Overlay>
+        <LevelStart startGame={startGame} />
+      ) : isLevelFinish ? (
+        <LevelCompleted goToNextLevel={resetGame} />
       ) : (
         <>
           <StatsBar game={game} />
@@ -158,6 +154,9 @@ export function Main({
           <ResetGameButton onPress={resetGame}>
             <Icon name="reset" size={24} color="primary" />
           </ResetGameButton>
+          <FinishGameButton onPress={levelFinish}>
+            <Icon name="reset" size={24} color="primaryDark" />
+          </FinishGameButton>
         </>
       )}
     </Container>
@@ -260,31 +259,22 @@ const ResetGameButton = styled("TouchableOpacity", {
   justifyContent: "center",
 });
 
+const FinishGameButton = styled("TouchableOpacity", {
+  position: "absolute",
+  top: 140,
+  left: 20,
+  backgroundColor: "#000",
+  width: 40,
+  height: 40,
+  borderRadius: 20,
+  alignItems: "center",
+  justifyContent: "center",
+});
+
 const Logo = styled(Image, {
   zIndex: 100,
   width: 150,
   height: 34,
   top: 72,
   marginHorizontal: "auto",
-});
-
-const LevelView = styled(View, {
-  borderRadius: 10,
-  display: "flex",
-});
-
-const LevelText = styled(Text, {
-  fontFamily: "Jomhuria",
-  fontSize: 80,
-  textAlign: "left",
-});
-
-const LevelButton = styled(Button, {
-  alignItems: "center",
-});
-
-const LevelImage = styled(Image, {
-  width: "100%",
-  height: 150,
-  borderRadius: 24,
 });
