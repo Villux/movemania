@@ -9,7 +9,7 @@ import { exec } from "child_process";
 const simulator = "iPhone 15";
 
 async function main() {
-  const data = JSON.parse(readFileSync(`./scripts/travel-data.json`, "utf-8"));
+  const data = JSON.parse(readFileSync(`./scripts/travel-data-center.json`, "utf-8"));
   const locations = data.map((d) => `${d.lat},${d.lon}`);
 
   const args = [
