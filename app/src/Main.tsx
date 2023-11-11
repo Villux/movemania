@@ -1,7 +1,7 @@
 import LottieView from "lottie-react-native";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { Fragment, useEffect, useRef, useState } from "react";
-import { StyleSheet, View } from "react-native";
+import { Image, View } from "react-native";
 import { Audio } from "expo-av";
 import RNMapView, {
   Marker,
@@ -94,7 +94,10 @@ export function Main({
   }
 
   return (
-    <View style={styles.container}>
+    <Container>
+      <LogoContainer>
+        <Logo source={require("../assets/images/logo.png")} />
+      </LogoContainer>
       <MapView
         mapRef={mapRef}
         initialRegion={initialRegion}
@@ -120,24 +123,33 @@ export function Main({
           </>
         )}
       </MapView>
-
       {!!foundReward && (
         <FoundRewardOverlay
           reward={foundReward}
           hide={() => setFoundReward(null)}
         />
       )}
-
       {!game ? (
         <Overlay>
-          <Button onPress={startGame}>Start Game</Button>
+          <LevelView>
+            <LevelImage source={require("../assets/images/level.jpeg")} />
+            <LevelText color="primary">Level 1</LevelText>
+            <Text>
+              Cyberpirates have seized an area nearby and hidden their treasure
+              all around the area.
+            </Text>
+            <Spacer />
+            <Text>Your job is to find and steal back that treasure.</Text>
+            <Spacer />
+            <LevelButton onPress={startGame}>Start level</LevelButton>
+          </LevelView>
         </Overlay>
       ) : (
         <ResetGameButton onPress={resetGame}>
           <Text>X</Text>
         </ResetGameButton>
       )}
-    </View>
+    </Container>
   );
 }
 
@@ -200,11 +212,17 @@ function RewardMarker({
   );
 }
 
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: "#000",
-  },
+const Container = styled(View, {
+  flex: 1,
+  backgroundColor: "#000",
+});
+
+const LogoContainer = styled(View, {
+  zIndex: 100,
+  display: "flex",
+  alignItems: "center",
+  justifyContent: "center",
+  marginHorizontal: "auto",
 });
 
 const FollowUserButton = styled("TouchableOpacity", {
@@ -229,4 +247,37 @@ const ResetGameButton = styled("TouchableOpacity", {
   borderRadius: 20,
   alignItems: "center",
   justifyContent: "center",
+});
+
+const Logo = styled(Image, {
+  zIndex: 100,
+  width: 150,
+  height: 34,
+  top: 72,
+  marginHorizontal: "auto",
+});
+
+const LevelView = styled(View, {
+  borderRadius: 10,
+  display: "flex",
+});
+
+const Spacer = styled(View, {
+  height: 20,
+});
+
+const LevelText = styled(Text, {
+  fontFamily: "Jomhuria",
+  fontSize: 80,
+  textAlign: "left",
+});
+
+const LevelButton = styled(Button, {
+  alignItems: "center",
+});
+
+const LevelImage = styled(Image, {
+  width: "100%",
+  height: 150,
+  borderRadius: 24,
 });
