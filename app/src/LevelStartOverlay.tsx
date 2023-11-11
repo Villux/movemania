@@ -6,7 +6,7 @@ export function LevelStartOverlay({ startGame }: { startGame: () => void }) {
   return (
     <Overlay>
       <Stack axis="y" spacing="normal">
-        <LevelImage source={require("../assets/images/level.jpeg")} />
+        <LevelImage source={require("../assets/images/level-1.jpg")} />
         <Stack
           axis="y"
           spacing="normal"

@@ -9,7 +9,7 @@ export function LevelStartNextOverlay({
   return (
     <Overlay>
       <Stack axis="y" spacing="normal">
-        <LevelImage source={require("../assets/images/level.jpeg")} />
+        <LevelImage source={require("../assets/images/level-2.jpg")} />
         <Stack
           axis="y"
           spacing="medium"
@@ -19,8 +19,11 @@ export function LevelStartNextOverlay({
             <Text variant="title" color="primary">
               Level 2
             </Text>
-            <Text>Give a new description for the next level</Text>
-            <Text>Your job is to find and steal back that treasure.</Text>
+            <Text>Robot apes have raided an area near you!</Text>
+            <Text>
+              You need to help the locals find all the barrels and bananas that
+              the apes have thrown in the streets.
+            </Text>
           </Stack>
           <Button onPress={resetGame}>Start level</Button>
         </Stack>

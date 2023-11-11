@@ -14,7 +14,7 @@ export function LevelCompletedOverlay({
   return (
     <Overlay>
       <Stack axis="y" spacing="small">
-        <LevelImage source={require("../assets/images/level.jpeg")} />
+        <LevelImage source={require("../assets/images/level-1.jpg")} />
         <Stack
           axis="y"
           spacing="medium"

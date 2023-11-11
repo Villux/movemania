@@ -17,6 +17,10 @@ export function FoundRewardOverlay({
   const lottieRef = useRef<LottieView>(null);
   const assets = rewardAssets[reward];
 
+  function handleAnimationFinish() {
+    setTimeout(hide, 1000);
+  }
+
   useEffect(() => {
     async function handle() {
       const { sound } = await Audio.Sound.createAsync(assets.sound);
@@ -24,7 +28,8 @@ export function FoundRewardOverlay({
       lottieRef.current?.play();
     }
 
-    setTimeout(handle, 500);
+    const timer = setTimeout(handle, 500);
+    return () => clearTimeout(timer);
   }, []);
 
   return (
@@ -38,7 +43,7 @@ export function FoundRewardOverlay({
           speed={1.5}
           style={{ width: 200, height: 200 }}
           source={assets.animation}
-          onAnimationFinish={() => hide()}
+          onAnimationFinish={handleAnimationFinish}
         />
       </Stack>
     </Overlay>

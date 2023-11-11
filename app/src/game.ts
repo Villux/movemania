@@ -12,8 +12,8 @@ import {
   Reward,
 } from "./types";
 
-const MAX_COINS = 5;
-const MAX_DIAMONDS = 3;
+const MAX_COINS = 10;
+const MAX_DIAMONDS = 5;
 const MAX_KEYS = 1;
 const MAX_CHESTS = 1;
 
