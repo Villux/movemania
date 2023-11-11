@@ -21,7 +21,6 @@ export function Main({ initialLocation }: { initialLocation: Coordinate }) {
   const [followUserLocation, setFollowUserLocation] = useState(false);
   const lastLocation = useRef<Coordinate>(initialLocation);
   const mapRef = useRef<RNMapView>(null);
-  const debug = true;
 
   const initialRegion = {
     latitude: initialLocation.latitude,
@@ -119,7 +118,7 @@ export function Main({ initialLocation }: { initialLocation: Coordinate }) {
 
       {game.phase === "highlights" && <View>{/* TODO */}</View>}
 
-      {debug && (
+      {(game.phase === "play" || game.phase === "highlights") && (
         <>
           <ResetGameButton onPress={resetGame}>
             <Icon name="reset" size={24} color="primary" />
