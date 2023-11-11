@@ -98,9 +98,14 @@ export function useStorageState<T>(key: string) {
     })();
   }, [key]);
 
-  const setStorageState = async (value: T) => {
-    await AsyncStorage.setItem(key, JSON.stringify(value));
-    setValue(value);
+  const setStorageState = (value: T | null) => {
+    if (value === null) {
+      AsyncStorage.removeItem(key);
+      setValue(null);
+    } else {
+      AsyncStorage.setItem(key, JSON.stringify(value));
+      setValue(value);
+    }
   };
 
   return [value, setStorageState] as const;

@@ -50,11 +50,7 @@ const mock: {
   },
 };
 
-export function LevelCompleted({
-  goToNextLevel,
-}: {
-  goToNextLevel: () => void;
-}) {
+export function LevelCompleted({ onContinue }: { onContinue: () => void }) {
   return (
     <Overlay>
       <LevelView>
@@ -77,7 +73,7 @@ export function LevelCompleted({
         </LevelStatsContainer>
         <Spacer />
 
-        <LevelButton onPress={goToNextLevel}>Continue</LevelButton>
+        <LevelButton onPress={onContinue}>Continue</LevelButton>
       </LevelView>
     </Overlay>
   );

@@ -1,39 +1,26 @@
-import LottieView from "lottie-react-native";
-import AsyncStorage from "@react-native-async-storage/async-storage";
-import { Fragment, useEffect, useRef, useState } from "react";
+import { useRef, useState } from "react";
 import { Image, View } from "react-native";
-import { Audio } from "expo-av";
-import RNMapView, {
-  Marker,
-  Region,
-  UserLocationChangeEvent,
-} from "react-native-maps";
+import RNMapView, { Region, UserLocationChangeEvent } from "react-native-maps";
 
-import { distanceBetweenCoords, isCoordInPolygon } from "./utils";
-import { Game, Reward, Coordinate } from "./types";
-import { Button, Overlay, MapView, Text, Icon } from "./components";
+import { distanceBetweenCoords } from "./utils";
+import { Reward, Coordinate, Hexagon } from "./types";
+import { MapView, Icon } from "./components";
 import { Hexagons } from "./Hexagons";
-import { createGameState } from "./game";
+import { useGame } from "./game";
 import { styled } from "./styled";
-import { rewardAssets } from "../assets/assets";
 import { StatsBar } from "./StatsBar";
-import { Spacer } from "./Spacer";
 import { LevelCompleted, LevelStart } from "./LevelOverlays";
+import { RewardMarker } from "./RewardMarker";
+import { FoundRewardOverlay } from "./FoundRewardOverlay";
 
-export function Main({
-  initialLocation,
-  persistedGameState,
-}: {
-  initialLocation: Coordinate;
-  persistedGameState: null | Game;
-}) {
-  const [game, setGame] = useState<Game | null>(persistedGameState);
+export function Main({ initialLocation }: { initialLocation: Coordinate }) {
+  const { game, updatePhase, updateHexagons, resetGame } =
+    useGame(initialLocation);
   const [markersVisible, setMarkersVisible] = useState(true);
   const [foundReward, setFoundReward] = useState<Reward | null>(null);
+  const [followUserLocation, setFollowUserLocation] = useState(false);
   const lastLocation = useRef<Coordinate>(initialLocation);
   const mapRef = useRef<RNMapView>(null);
-  const [followUserLocation, setFollowUserLocation] = useState(false);
-  const [isLevelFinish, setIsLevelFinish] = useState(false);
 
   const initialRegion = {
     latitude: initialLocation.latitude,
@@ -42,25 +29,20 @@ export function Main({
     longitudeDelta: 0.01,
   };
 
-  function startGame() {
-    const _game = createGameState({ initialLocation });
-    setGame(_game);
-    AsyncStorage.setItem("game", JSON.stringify(_game));
-  }
-
-  function levelFinish() {
-    setIsLevelFinish(true);
-  }
-
-  function resetGame() {
-    setGame(null);
-    AsyncStorage.removeItem("game");
-    setIsLevelFinish(false);
-  }
-
   function handleUserLocationChange({ nativeEvent }: UserLocationChangeEvent) {
     const currentLocation = nativeEvent.coordinate;
-    if (!currentLocation || !game) return;
+    if (!currentLocation) return;
+
+    const distance = distanceBetweenCoords(
+      currentLocation,
+      lastLocation.current
+    );
+
+    // Process the current location if the user has moved enough
+    if (distance > 10) {
+      const rewardForHexagon = updateHexagons(currentLocation);
+      setFoundReward(rewardForHexagon);
+    }
 
     if (followUserLocation) {
       mapRef.current?.animateToRegion({
@@ -68,23 +50,6 @@ export function Main({
         latitudeDelta: 0.01,
         longitudeDelta: 0.01,
       });
-    }
-
-    const distance = distanceBetweenCoords(
-      currentLocation,
-      lastLocation.current
-    );
-
-    if (distance > 10) {
-      const newHexagons = game.hexagons.map((hexagon) => {
-        if (hexagon.isCaptured) return hexagon;
-        const isCaptured = isCoordInPolygon(currentLocation, hexagon.h3Index);
-        if (isCaptured && hexagon.reward) {
-          setFoundReward(hexagon.reward);
-        }
-        return { ...hexagon, isCaptured };
-      });
-      setGame({ ...game, hexagons: newHexagons });
     }
 
     lastLocation.current = currentLocation;
@@ -114,36 +79,29 @@ export function Main({
         onUserLocationChange={handleUserLocationChange}
         onRegionChange={handleRegionChange}
       >
-        {!!game && (
+        {game.phase === "play" && (
           <>
-            {game.hexagons
-              .filter((h) => h.reward)
-              .map(({ reward, coordinate }) => (
-                <RewardMarker
-                  key={`${coordinate.latitude}-${coordinate.longitude}`}
-                  reward={reward as Reward}
-                  coordinate={coordinate}
-                />
-              ))}
+            <RewardMarkers hexagons={game.hexagons} />
             <Hexagons hexagons={game.hexagons} />
           </>
         )}
       </MapView>
 
-      {!!foundReward && (
-        <FoundRewardOverlay
-          reward={foundReward}
-          hide={() => setFoundReward(null)}
-        />
+      {game.phase === "start" && (
+        <LevelStart startGame={() => updatePhase("play")} />
       )}
 
-      {!game ? (
-        <LevelStart startGame={startGame} />
-      ) : isLevelFinish ? (
-        <LevelCompleted goToNextLevel={resetGame} />
-      ) : (
+      {game.phase === "play" && (
         <>
+          {!!foundReward && (
+            <FoundRewardOverlay
+              reward={foundReward}
+              hide={() => setFoundReward(null)}
+            />
+          )}
+
           <StatsBar game={game} />
+
           <FollowUserButton onPress={() => setFollowUserLocation((v) => !v)}>
             <Icon
               name="location"
@@ -151,74 +109,39 @@ export function Main({
               color={followUserLocation ? "primary" : "primaryDark"}
             />
           </FollowUserButton>
+
           <ResetGameButton onPress={resetGame}>
             <Icon name="reset" size={24} color="primary" />
           </ResetGameButton>
-          <FinishGameButton onPress={levelFinish}>
+
+          <FinishGameButton onPress={() => updatePhase("stats")}>
             <Icon name="reset" size={24} color="primaryDark" />
           </FinishGameButton>
         </>
       )}
+
+      {game.phase === "stats" && (
+        <LevelCompleted onContinue={() => updatePhase("highlights")} />
+      )}
+
+      {game.phase === "highlights" && <View>{/* TODO */}</View>}
     </Container>
   );
 }
 
-function FoundRewardOverlay({
-  reward,
-  hide,
-}: {
-  reward: Reward;
-  hide: () => void;
-}) {
-  const lottieRef = useRef<LottieView>(null);
-  const assets = rewardAssets[reward];
-
-  useEffect(() => {
-    async function handle() {
-      const { sound } = await Audio.Sound.createAsync(assets.sound);
-      sound.playAsync().catch((e) => console.log(e));
-      lottieRef.current?.play();
-    }
-
-    setTimeout(handle, 500);
-  }, []);
-
+function RewardMarkers({ hexagons }: { hexagons: Hexagon[] }) {
   return (
-    <Overlay>
-      <Fragment>
-        <Text style={{ textAlign: "center" }}>You've found a {reward}!</Text>
-        <LottieView
-          ref={lottieRef}
-          loop={false}
-          autoPlay={false}
-          speed={1.5}
-          style={{ width: 200, height: 200 }}
-          source={assets.animation}
-          onAnimationFinish={() => hide()}
-        />
-      </Fragment>
-    </Overlay>
-  );
-}
-
-function RewardMarker({
-  reward,
-  coordinate,
-  onPress,
-}: {
-  reward: Reward;
-  coordinate: Coordinate;
-  onPress?: () => void;
-}) {
-  const assets = rewardAssets[reward];
-
-  return (
-    <Marker
-      coordinate={coordinate}
-      image={assets.image}
-      anchor={{ x: 0.5, y: 0.5 }}
-      onPress={onPress}
-    />
+    <>
+      {hexagons
+        .filter((h) => h.reward && h.capturedBy === null)
+        .map(({ reward, coordinate }) => (
+          <RewardMarker
+            key={`${coordinate.latitude}-${coordinate.longitude}`}
+            reward={reward as Reward}
+            coordinate={coordinate}
+          />
+        ))}
+    </>
   );
 }
 
