@@ -25,7 +25,7 @@ export function FoundRewardOverlay({
   const assets = rewardAssets[reward];
 
   function handleAnimationFinish() {
-    setTimeout(() => hide(), 1000);
+    hide();
   }
 
   useEffect(() => {

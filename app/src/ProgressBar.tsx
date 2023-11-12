@@ -12,6 +12,21 @@ import { Reward, RewardState } from "./types";
 import { Stack } from "./components/Stack";
 import { Text } from "./components";
 
+const getExpByReward = (reward: Reward) => {
+  switch (reward) {
+    case "coin":
+      return 5;
+    case "gem":
+      return 10;
+    case "key":
+      return 20;
+    case "chest":
+      return 30;
+    default:
+      return 0;
+  }
+};
+
 export function ProgressBar({
   collectedTiles,
   boost = true,
@@ -23,33 +38,17 @@ export function ProgressBar({
   stats: Record<Reward, RewardState>;
   onComplete: () => void;
 }) {
-  const getExpByReward = (reward: Reward) => {
-    switch (reward) {
-      case "coin":
-        return 5;
-      case "gem":
-        return 10;
-      case "key":
-        return 20;
-      case "chest":
-        return 30;
-      default:
-        return 0;
-    }
-  };
-
   const getExp = (stats: Record<Reward, RewardState>) => {
     if (collectedTiles === 0) return 0;
     let exp = 0;
     Object.entries(stats).forEach(([key, value]) => {
       exp += value.foundCount * getExpByReward(key as Reward);
     });
-    exp += collectedTiles * 2;
+    exp += collectedTiles;
     return Math.min(exp, 100);
   };
 
   const exp = getExp(stats);
-
   const progress = useSharedValue(0);
   const height = useSharedValue(8);
 

@@ -60,10 +60,12 @@ export function Main({ initialLocation }: { initialLocation: Coordinate }) {
     }
 
     if (followUserLocation) {
-      mapRef.current?.animateToRegion({
-        ...currentLocation,
-        latitudeDelta: 0.01,
-        longitudeDelta: 0.01,
+      requestAnimationFrame(() => {
+        mapRef.current?.animateToRegion({
+          ...currentLocation,
+          latitudeDelta: 0.015,
+          longitudeDelta: 0.015,
+        });
       });
     }
 
@@ -168,15 +170,11 @@ export function Main({ initialLocation }: { initialLocation: Coordinate }) {
   );
 }
 
-const showAllRewardMarkers = true;
-
 function RewardMarkers({ hexagons }: { hexagons: Hexagon[] }) {
   return (
     <>
       {hexagons
-        .filter(
-          (h) => h.reward && (showAllRewardMarkers || h.capturedBy.length)
-        )
+        .filter((h) => h.reward && h.capturedBy.length)
         .map(({ reward, coordinate }) => (
           <RewardMarker
             key={`${coordinate.latitude}-${coordinate.longitude}`}
