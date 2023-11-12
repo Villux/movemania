@@ -26,7 +26,7 @@ MoveMania isn't just a game; it's a shared journey of discovery and joy. Each st
 
 ## Technical Approach
 
-Built on React Native, MoveMania leverages GPS coordinate data from users' devices. Our solution is not limited to mobile use and can extend to other movement-tracking wearables.
+A working game built with React Native, MoveMania leverages GPS coordinate data from users' devices. Our solution is not limited to mobile use and can extend to other movement-tracking wearables.
 
 Key Features:
 
