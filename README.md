@@ -1,5 +1,11 @@
 # MoveMania
-Junction 2023
+
+<p align='center'>
+  Junction 2023 Hackathon Project
+<p/>
+<p align='center'>
+  <img src="app/assets/images/splash.png" alt="MoveMania Logo" width="400"/>
+<p/>
 
 ## Description
 
@@ -9,29 +15,30 @@ During the crucial years of childhood, feeling connected, receiving support, and
 
 MoveMania is an exciting game designed to boost the well-being of school-age children by promoting physical activity and community spirit. More than just a game, it inspires adventure, teamwork, and being active among kids.
 
-How MoveMania Makes Magic:
-- Team Formation: Class creates a team for themselves.
-- Exploration and Rewards: As kids walk, they unlock new adventures and collect treasures like coins and diamonds.
-- Celebrate Achievements: Completing levels unlocks special moments where players can appreciate their classmates with unique compliment badges. For instance, award a badge to a classmate who shines as an artist.
-- Team Power: Walking together multiplies the fun! When the group walks in unison, they activate a 'boost' feature, making it easier and faster to find rewards and complete levels. This shared activity not only adds excitement but also promotes team spirit.
+How MoveMania Works Its Magic:
 
-MoveMania is more than a game; it’s a shared journey of discovery and joy. Every step taken not only brings fun and excitement but also strengthens the ties that bind us, building a stronger, more connected community. Join the MoveMania adventure, where every step counts towards a happier, healthier community!
+- Team Building: Classes form their unique teams.
+- Exploration and Rewards: Every step unlocks new adventures and treasures (e.g. coins, gems, and more).
+- Celebrating Milestones: Completing levels triggers special moments where players can celebrate their classmates with unique compliment badges, acknowledging their strengths and achievements.
+- Team Power: Walking together magnifies the fun! As the group moves in sync, they activate a 'boost' feature, making it easier to find rewards and conquer levels. This shared activity fosters excitement and team spirit.
 
+MoveMania isn't just a game; it's a shared journey of discovery and joy. Each step not only brings excitement but also strengthens the community's bonds. Join us on the MoveMania adventure, where every step counts toward a happier, healthier community!
 
-## Technical solution
+## Technical Approach
 
-Current solution is created with React Native and it utilizes GPS coordinate data from the user's phone. Application is not limited to mobile device usage only and can be extended with other wearables that are able to deliver movement data.
+Built on React Native, MoveMania leverages GPS coordinate data from users' devices. Our solution is not limited to mobile use and can extend to other movement-tracking wearables.
 
-Key features of our Solution:
-- Flexible Reward System: Effortlessly modify reward types and probabilities via the main app's configuration settings, without the need to alter the underlying reward engine.
-- H3 Library: Our solution employs the H3 library to overlay sophisticated tile logic onto standard maps.
-- Creative Progress Bar: It's designed to take movement data and achieved rewards as it's input to allow more flexbile gamification opportunities.
+Key Features:
 
-Our demo solution has no backend. To run app successfully in a real scenario backend is needed to store user related data and communicate coordinates between the users.
+- Adaptable Reward System: Easily tweak reward types and probabilities via the app's settings without altering the core reward engine.
+- H3 Library Integration: Utilizing the H3 library for intricate tile logic on standard maps.
+- Creative Progress Bar: Designed to flexibly gamify movement data and achieved rewards.
 
-## How would we continue the project after Junction?
+*Note: Our demo solution has no backend. To run app successfully in a real scenario backend is needed to store user related data and communicate coordinates between the users.*
 
-1. Missing technical services would be created, like the backend
-2. Creative use of existing movement data. Higher resolution information is available from the recorded movement data that could be use to make the game more dyanamic
-3. Alternative movement data, like accelometer data.
-4. Levels, rewards and compliments would be made available for the team to create to better fit their taste.
+## Post-Junction Roadmap
+
+1. Developing essential technical services, like a backend for user data storage and coordinate communication.
+2. Utilizing higher-resolution movement data for more dynamic gameplay.
+3. Exploring alternative movement data, such as accelerometer input.
+4. Empowering teams to create custom levels, rewards, and compliments to tailor the game to their preferences.
