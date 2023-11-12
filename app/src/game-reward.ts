@@ -87,16 +87,16 @@ export const getReward = ({
 
   gameState.tilesCollectedSinceLastReward += 1;
 
+  gameState.collectedTiles += 1;
+
+  // Doesn't make sense to return rewards too soon
+  if (gameState.collectedTiles < 4) return null;
+
   if (reward) {
     gameState.tilesCollectedSinceLastReward = 0;
     const state = rewardState[reward];
     state.foundCount += 1;
   }
-
-  gameState.collectedTiles += 1;
-
-  // Doesn't make sense to return rewards too soon
-  if (gameState.collectedTiles < 4) return null;
 
   return reward;
 };
