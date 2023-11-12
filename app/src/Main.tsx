@@ -21,7 +21,7 @@ import { LevelCompletedOverlay } from "./LevelCompletedOverlay";
 import { LevelHighlightsOverlay } from "./LevelHighlightsOverlay";
 import { LevelStartNextOverlay } from "./LevelStartNextOverlay";
 
-const debug = true;
+const debug = false;
 
 export function Main({ initialLocation }: { initialLocation: Coordinate }) {
   const game = useGame(initialLocation);
