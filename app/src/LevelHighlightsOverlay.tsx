@@ -20,11 +20,11 @@ export function LevelHighlightsOverlay({
         <Stack axis="y" spacing="medium">
           <Stack axis="y" spacing="small" align="center">
             <Text variant="title" color="primary">
-              Team highlights
+              Compliment time!
             </Text>
 
-            <Text>
-              Pick one of your teammates accomplishments to highlight:
+            <Text align="center" style={{ fontSize: 16, lineHeight: 22 }}>
+              Pick one of your teammates to pass a compliment to:
             </Text>
           </Stack>
 
@@ -42,17 +42,17 @@ export function LevelHighlightsOverlay({
 const users = [
   {
     name: "Julien",
-    description: "Collected most coins",
+    description: "King of comedy",
     avatar: require("../assets/images/user-avatar-2.png"),
   },
   {
     name: "Andreas",
-    description: "Walked the most",
+    description: "Mastermind of creativity",
     avatar: require("../assets/images/user-avatar-3.png"),
   },
   {
     name: "Ville",
-    description: "Found the mystery chest",
+    description: "Ultimate support champion",
     avatar: require("../assets/images/user-avatar-4.png"),
   },
 ];
